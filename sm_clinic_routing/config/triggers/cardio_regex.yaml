@@ -1,0 +1,108 @@
+# Автоматически сгенерировано parse_tables.py
+# Источник: cardio_regex
+# НЕ РЕДАКТИРОВАТЬ ВРУЧНУЮ — правьте исходные таблицы и перезапускайте
+
+organ_code: cardio_regex
+organ_name: Сердце (RegEx-паттерны)
+patterns:
+- id: cardio_re_gipertrofiya_levogo_zheludochka_glzh_uto
+  source: Гипертрофия левого желудочка / ГЛЖ / утолщение стенок ЛЖ / утолщение МЖП и ЗСЛЖ
+  regex: (?i)(гипертрофи[яи]|глж|утолщен(ие|ия)\s+(стенок\s+лж|мжп|зслж))
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned
+- id: cardio_re_dilatatsiya_levogo_zheludochka_predserdi
+  source: Дилатация левого желудочка / предсердия / расширение камер / увеличение полости
+  regex: (?i)(дилат[аи]ци[яи]|расширен(ие|ия)\s+(камер|полост[еи]|лж|лп)|увеличен(ие|ия)\s+(полости|полостей|лж|лп))
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned
+- id: cardio_re_snizhenie_globalnoy_sokratimosti_lzh_sni
+  source: Снижение глобальной сократимости ЛЖ / снижение ФВ / фракция выброса менее 50%
+  regex: (?i)(снижен(ие|ия)\s+(сократимости|фв|систолической\s+функции)|фракци[яи]\s+выброса\s+менее\s+50|фв\s*<\s*50)
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned
+- id: cardio_re_fraktsiya_vybrosa_v_norme_sohrannaya_sok
+  source: Фракция выброса в норме / сохранная сократимость / систолическая функция сохранена
+  regex: (?i)(сохранная\s+сократимость|функция\s+сохранена|фв\s+в\s+норме|фв\s*>\s*50|фв\s*=\s*(5[5-9]|[6-9]\d))
+  specialist: []
+  is_negative: true
+  urgency: observation
+- id: cardio_re_zony_gipokinezii_lokalnoe_narushenie_sok
+  source: Зоны гипокинезии / локальное нарушение сократимости / гипокинез стенки ЛЖ
+  regex: (?i)(гипокинез[а]?|акинез[а]?|локально(е|го)\s+нарушен(ие|ия)\s+сократимости|зоны\s+гипокинезии)
+  specialist:
+  - Кардиолог
+  - Аритмолог
+  is_negative: false
+  urgency: planned
+- id: cardio_re_diastolicheskaya_disfunktsiya_lzh_narush
+  source: Диастолическая дисфункция ЛЖ / нарушение расслабления ЛЖ
+  regex: (?i)(диастолическ[аяоий]{2,4}\s+дисфункци[яи]|нарушен(ие|ия)\s+расслабления\s+лж)
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned
+- id: cardio_re_ateroskleroz_aorty_uplotnenie_ili_kaltsi
+  source: Атеросклероз аорты / уплотнение или кальциноз стенок аорты
+  regex: (?i)(атеросклероз\s+аорты|уплотнен(ие|ия)\s+(стенок\s+)?аорты|кальциноз\s+аорты)
+  specialist:
+  - Кардиолог
+  - Терапевт
+  is_negative: false
+  urgency: planned
+- id: cardio_re_dilatatsiya_kornya_aorty_rasshirenie_vos
+  source: Дилатация корня аорты / расширение восходящего отдела аорты
+  regex: (?i)(дилат[аи]ци[яи]\s+(корня\s+)?аорты|расширен(ие|ия)\s+восходящего\s+отдела)
+  specialist:
+  - Кардиолог
+  - Кардиохирург
+  is_negative: false
+  urgency: planned
+- id: cardio_re_nedostatochnost_klapanov_mitralnogo_aort
+  source: Недостаточность клапанов (митрального, аортального) / регургитация 1, 2, 3 степени
+  regex: (?i)(недостаточность\s+\w+\s+клапана|регургитаци[яи]\s+\d\s*(-ая|-я)?\s*(ст(еп)?|степени)?)
+  specialist:
+  - Кардиолог
+  - Кардиохирург
+  is_negative: false
+  urgency: planned
+- id: cardio_re_prolaps_mitralnogo_klapana_pmk_progib_st
+  source: Пролапс митрального клапана (ПМК) / прогиб створок МК в полость ЛП
+  regex: (?i)(пролапс\s+(митрального\s+клапана|мк)|пмк(\s+\d)?\s*ст)
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned
+- id: cardio_re_legochnaya_gipertenziya_povyshenie_davle
+  source: Легочная гипертензия / повышение давления в легочной артерии / СДЛА более 35 мм рт.ст.
+  regex: (?i)(легочн[аяоий]{2,4}\s+гипертензи[яи]|сдла\s*(>|более)\s*35|повышен(ие|ия)\s+давления\s+в\s+ла)
+  specialist:
+  - Кардиолог
+  - Пульмонолог
+  is_negative: false
+  urgency: planned
+- id: cardio_re_zhidkost_v_polosti_perikarda_vypot_v_per
+  source: Жидкость в полости перикарда / выпот в перикарде / гидроперикард
+  regex: (?i)(жидкость\s+в\s+(полости\s+)?перикарда|выпот\s+в\s+перикарде|гидроперикард)
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned
+- id: cardio_re_dopolnitelnaya_horda_lzh_dhlzh_anomalno_
+  source: Дополнительная хорда ЛЖ (ДХЛЖ) / аномально расположенная хорда / ложная хорда
+  regex: (?i)(дополнительн[аяоий]{2,4}\s+хорда|дхлж|ложная\s+хорда|аномальн[аяоий]{2,4}\s+расположенная\s+хорда)
+  specialist: []
+  is_negative: true
+  urgency: observation
+- id: cardio_re_otkrytoe_ovalnoe_okno_ooo_sbros_krovi_na
+  source: Открытое овальное окно (ООО) / сброс крови на уровне предсердий
+  regex: (?i)(открытое\s+овальное\s+окно|ооо|сброс\s+крови\s+на\s+уровне\s+предсердий)
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned

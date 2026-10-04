@@ -1,0 +1,270 @@
+# Автоматически сгенерировано parse_tables.py
+# Источник: cardio
+# НЕ РЕДАКТИРОВАТЬ ВРУЧНУЮ — правьте исходные таблицы и перезапускайте
+
+organ_code: cardio
+organ_name: Сердце и сосуды (ЭхоКГ)
+keywords:
+- эхокардиография
+- эхокг
+- сердце
+- лж
+- пж
+- лп
+- пп
+- митральный клапан
+- аортальный клапан
+- трикуспидальный
+- фракция выброса
+- фв
+- гипертрофия
+- дилатация
+- перикард
+- легочная артерия
+- сдла
+findings:
+- id: cardio_gipertrofiya_levogo_zheludochka
+  synonyms:
+  - гипертрофия левого желудочка
+  - глж
+  - утолщение стенок лж
+  - утолщение мжп и зслж
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned
+  source: Гипертрофия левого желудочка / ГЛЖ / утолщение стенок ЛЖ / утолщение МЖП и ЗСЛЖ
+- id: cardio_dilatatsiya_levogo_zheludochka
+  synonyms:
+  - дилатация левого желудочка
+  - расширение лж
+  - увеличение полости лж
+  - лж до мм
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned
+  source: Дилатация левого желудочка / расширение ЛЖ / увеличение полости ЛЖ / ЛЖ до ... мм
+- id: cardio_dilatatsiya_levogo_predserdiya
+  synonyms:
+  - дилатация левого предсердия
+  - расширение лп
+  - увеличение полости лп
+  - лп до мм
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned
+  source: Дилатация левого предсердия / расширение ЛП / увеличение полости ЛП / ЛП до ... мм
+- id: cardio_snizhenie_globalnoy_sokratimosti_lzh
+  synonyms:
+  - снижение глобальной сократимости лж
+  - снижение фв
+  - фракция выброса менее 50%
+  - систолическая дисфункция
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned
+  source: Снижение глобальной сократимости ЛЖ / снижение ФВ / фракция выброса менее 50% / систолическая дисфункция
+- id: cardio_fraktsiya_vybrosa_v_norme
+  synonyms:
+  - фракция выброса в норме
+  - сохранная сократимость
+  - фв более 55%
+  - систолическая функция сохранена
+  specialist: []
+  is_negative: true
+  urgency: observation
+  source: Фракция выброса в норме / сохранная сократимость / ФВ более 55% / систолическая функция сохранена
+- id: cardio_zony_gipokinezii
+  synonyms:
+  - зоны гипокинезии
+  - локальное нарушение сократимости
+  - гипокинез стенки лж
+  - акинез
+  specialist:
+  - Кардиолог
+  - Аритмолог
+  is_negative: false
+  urgency: planned
+  source: Зоны гипокинезии / локальное нарушение сократимости / гипокинез стенки ЛЖ / акинез
+- id: cardio_diastolicheskaya_disfunktsiya_lzh
+  synonyms:
+  - диастолическая дисфункция лж
+  - нарушение расслабления лж
+  - диастолическая дисфункция 1 типа
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned
+  source: Диастолическая дисфункция ЛЖ / нарушение расслабления ЛЖ / диастолическая дисфункция 1 типа
+- id: cardio_ateroskleroz_aorty
+  synonyms:
+  - атеросклероз аорты
+  - уплотнение стенок аорты
+  - кальциноз аорты
+  - склероз стенок аорты
+  specialist:
+  - Кардиолог
+  - Терапевт
+  is_negative: false
+  urgency: planned
+  source: Атеросклероз аорты / уплотнение стенок аорты / кальциноз аорты / склероз стенок аорты
+- id: cardio_dilatatsiya_kornya_aorty
+  synonyms:
+  - дилатация корня аорты
+  - расширение восходящего отдела аорты
+  - аорта до мм
+  specialist:
+  - Кардиолог
+  - Сердечно-сосудистый хирург
+  is_negative: false
+  urgency: planned
+  source: Дилатация корня аорты / расширение восходящего отдела аорты / аорта до ... мм
+- id: cardio_nedostatochnost_mitralnogo_klapana
+  synonyms:
+  - недостаточность митрального клапана
+  - митральная регургитация
+  - мк регургитация 1-2 степени
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned
+  source: Недостаточность митрального клапана / митральная регургитация / МК регургитация 1-2 степени
+- id: cardio_stenoz_mitralnogo_klapana
+  synonyms:
+  - стеноз митрального клапана
+  - митральный стеноз
+  - кальциноз створок мк с ограничением открытия
+  specialist:
+  - Кардиолог
+  - Сердечно-сосудистый хирург
+  is_negative: false
+  urgency: planned
+  source: Стеноз митрального клапана / митральный стеноз / кальциноз створок МК с ограничением открытия
+- id: cardio_prolaps_mitralnogo_klapana
+  synonyms:
+  - пролапс митрального клапана
+  - пмк
+  - прогиб створок мк в полость лп
+  - пмк 1 степени
+  specialist:
+  - Кардиолог
+  - Педиатр
+  is_negative: false
+  urgency: planned
+  source: Пролапс митрального клапана / ПМК / прогиб створок МК в полость ЛП / ПМК 1 степени
+- id: cardio_nedostatochnost_aortalnogo_klapana
+  synonyms:
+  - недостаточность аортального клапана
+  - аортальная регургитация
+  - ак регургитация 1 степени
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned
+  source: Недостаточность аортального клапана / аортальная регургитация / АК регургитация 1 степени
+- id: cardio_stenoz_aortalnogo_klapana
+  synonyms:
+  - стеноз аортального клапана
+  - аортальный стеноз
+  - сужение аортального отверстия
+  - кальциноз ак
+  specialist:
+  - Кардиолог
+  - Сердечно-сосудистый хирург
+  is_negative: false
+  urgency: planned
+  source: Стеноз аортального клапана / аортальный стеноз / сужение аортального отверстия / кальциноз АК
+- id: cardio_nedostatochnost_trikuspidalnogo_klapana
+  synonyms:
+  - недостаточность трикуспидального клапана
+  - трикуспидальная регургитация
+  - тк регургитация 1-2 ст.
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned
+  source: Недостаточность трикуспидального клапана / трикуспидальная регургитация / ТК регургитация 1-2 ст.
+- id: cardio_legochnaya_gipertenziya
+  synonyms:
+  - легочная гипертензия
+  - повышение давления в легочной артерии
+  - сдла более 35 мм рт.ст.
+  specialist:
+  - Кардиолог
+  - Пульмонолог
+  is_negative: false
+  urgency: planned
+  source: Легочная гипертензия / повышение давления в легочной артерии / СДЛА более 35 мм рт.ст.
+- id: cardio_davlenie_v_legochnoy_arterii_v_norme
+  synonyms:
+  - давление в легочной артерии в норме
+  - сдла в норме
+  - признаков легочной гипертензии не выявлено
+  specialist: []
+  is_negative: true
+  urgency: observation
+  source: Давление в легочной артерии в норме / СДЛА в норме / признаков легочной гипертензии не выявлено
+- id: cardio_zhidkost_v_polosti_perikarda
+  synonyms:
+  - жидкость в полости перикарда
+  - выпот в перикарде
+  - гидроперикард
+  - сепарация листков перикарда до мм
+  specialist:
+  - Кардиолог
+  is_negative: false
+  urgency: planned
+  source: Жидкость в полости перикарда / выпот в перикарде / гидроперикард / сепарация листков перикарда до ... мм
+- id: cardio_zhidkosti_v_polosti_perikarda_ne_vyyavle
+  synonyms:
+  - жидкости в полости перикарда не выявлено
+  - листки перикарда сомкнуты
+  - физиологическое количество жидкости
+  specialist: []
+  is_negative: true
+  urgency: observation
+  source: Жидкости в полости перикарда не выявлено / листки перикарда сомкнуты / физиологическое количество жидкости
+- id: cardio_dopolnitelnaya_horda_lzh
+  synonyms:
+  - дополнительная хорда лж
+  - дхлж
+  - аномально расположенная хорда
+  - ложная хорда лж
+  specialist: []
+  is_negative: true
+  urgency: observation
+  source: Дополнительная хорда ЛЖ / ДХЛЖ / аномально расположенная хорда / ложная хорда ЛЖ
+- id: cardio_otkrytoe_ovalnoe_okno
+  synonyms:
+  - открытое овальное окно
+  - ооо
+  - патентное овальное окно
+  - сброс крови на уровне предсердий
+  specialist:
+  - Кардиолог
+  - Педиатр
+  is_negative: false
+  urgency: planned
+  source: Открытое овальное окно / ООО / патентное овальное окно / сброс крови на уровне предсердий
+- id: cardio_dilatatsiya_pravyh_kamer_serdtsa
+  synonyms:
+  - дилатация правых камер сердца
+  - расширение пж и пп
+  - увеличение правого желудочка
+  specialist:
+  - Кардиолог
+  - Пульмонолог
+  is_negative: false
+  urgency: planned
+  source: Дилатация правых камер сердца / расширение ПЖ и ПП / увеличение правого желудочка
+- id: cardio_narusheniya_vnutriserdechnoy_gemodinamik
+  synonyms:
+  - нарушения внутрисердечной гемодинамики не выявлено
+  - показатели в пределах возрастной нормы
+  specialist: []
+  is_negative: true
+  urgency: observation
+  source: Нарушения внутрисердечной гемодинамики не выявлено / показатели в пределах возрастной нормы

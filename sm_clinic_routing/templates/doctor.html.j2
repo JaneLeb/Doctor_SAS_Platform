@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>ArtKnit — Кардиоцентр | Экран врача</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #F6F8F7;
+    color: #1F2937;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  /* ---------- ЛЕЙАУТ ---------- */
+  .app { display: flex; min-height: 100vh; }
+
+  /* ---------- САЙДБАР ---------- */
+  .sidebar {
+    width: 240px;
+    background: #FFFFFF;
+    border-right: 1px solid #E5E7EB;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-icon {
+    width: 40px; height: 40px;
+    background: #13AB7B;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 20px;
+  }
+  .logo-text h1 { font-size: 16px; font-weight: 700; }
+  .logo-text p { font-size: 12px; color: #6B7280; }
+
+  .section-title {
+    font-size: 11px; font-weight: 600; color: #9CA3AF;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+  .nav { display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 8px;
+    color: #374151; font-size: 14px; cursor: pointer;
+    transition: background .15s;
+  }
+  .nav-item:hover { background: #F3F4F6; }
+  .nav-item.active { background: #E8F5EE; color: #13AB7B; font-weight: 600; }
+  .nav-item .ico { width: 18px; text-align: center; }
+
+  /* ---------- ОСНОВНАЯ ОБЛАСТЬ ---------- */
+  .main { flex: 1; padding: 20px 28px 40px; }
+
+  /* ---------- ВЕРХНЯЯ ПАНЕЛЬ ---------- */
+  .topbar {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 24px;
+  }
+  .search {
+    flex: 1; max-width: 420px;
+    display: flex; align-items: center; gap: 8px;
+    background: #FFFFFF; border: 1px solid #E5E7EB;
+    border-radius: 12px; padding: 10px 14px;
+    color: #9CA3AF;
+  }
+  .search input {
+    border: none; outline: none; background: transparent;
+    width: 100%; font-size: 14px; color: #1F2937;
+  }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .icon-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: #FFFFFF; border: 1px solid #E5E7EB;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative;
+  }
+  .icon-btn .dot {
+    position: absolute; top: 8px; right: 8px;
+    width: 8px; height: 8px; background: #FE8B4B; border-radius: 50%;
+  }
+  .user {
+    display: flex; align-items: center; gap: 8px;
+    background: #FFFFFF; border: 1px solid #E5E7EB;
+    border-radius: 20px; padding: 6px 14px 6px 6px;
+    cursor: pointer;
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #13AB7B; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 13px;
+  }
+  .btn-primary {
+    background: #13AB7B; color: #fff; border: none;
+    border-radius: 20px; padding: 10px 20px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-primary:hover { background: #13AB7B; }
+
+  /* ---------- ЖЁЛТЫЙ БАННЕР МАРШРУТА ---------- */
+  .route-banner {
+    background: #FFF8E6;
+    border: 1px solid #F5D97A;
+    border-left: 5px solid #F5B400;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .route-banner-head {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; color: #7A5A00; font-size: 14px;
+  }
+  .route-banner-body {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 6px 30px; font-size: 13px; color: #5C4A00;
+  }
+  .route-banner-body b { color: #3F3300; }
+  .route-banner-actions { display: flex; gap: 10px; margin-top: 6px; }
+  .btn-outline {
+    background: #FFFFFF; border: 1px solid #E5C24A;
+    color: #7A5A00; border-radius: 10px;
+    padding: 8px 16px; font-size: 13px; font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-outline:hover { background: #FFF4D6; }
+
+  /* ---------- СЕТКА ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+  }
+
+  /* ---------- КАРТОЧКА ПАЦИЕНТА ---------- */
+  .card {
+    background: #FFFFFF; border: 1px solid #E5E7EB;
+    border-radius: 16px; padding: 20px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 16px; font-weight: 700; margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .patient-head {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 16px;
+  }
+  .patient-avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: #13AB7B; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 600;
+  }
+  .patient-info h2 { font-size: 18px; font-weight: 700; }
+  .patient-info p { font-size: 13px; color: #6B7280; }
+  .patient-meta {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px; font-size: 13px; color: #374151;
+  }
+  .patient-meta div span { color: #9CA3AF; display: block; font-size: 11px; }
+
+  /* ---------- ФОРМА ЗАВЕРШЕНИЯ ---------- */
+  .form-section { margin-top: 6px; }
+  .form-section h3 {
+    font-size: 15px; font-weight: 700; margin-bottom: 4px;
+  }
+  .form-hint { font-size: 12px; color: #9CA3AF; margin-bottom: 14px; }
+  .tactics { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .tactic {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; border: 1px solid #E5E7EB;
+    border-radius: 10px; cursor: pointer;
+    transition: all .15s;
+  }
+  .tactic:hover { border-color: #13AB7B; background: #F3FBF6; }
+  .tactic input { accent-color: #13AB7B; width: 18px; height: 18px; }
+  .tactic label { cursor: pointer; font-size: 14px; color: #1F2937; }
+  .comment {
+    width: 100%; border: 1px solid #E5E7EB; border-radius: 10px;
+    padding: 12px 14px; font-size: 13px; font-family: inherit;
+    resize: vertical; min-height: 70px; outline: none;
+    margin-bottom: 16px;
+  }
+  .comment:focus { border-color: #13AB7B; }
+  .form-actions { display: flex; gap: 10px; }
+  .btn-ghost {
+    background: #F3F4F6; color: #374151; border: none;
+    border-radius: 20px; padding: 10px 22px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .btn-ghost:hover { background: #E5E7EB; }
+
+  /* ---------- ПРАВАЯ КОЛОНКА ---------- */
+  .stat-card {
+    background: #FFFFFF; border: 1px solid #E5E7EB;
+    border-radius: 16px; padding: 18px;
+    margin-bottom: 16px;
+  }
+  .stat-card h4 {
+    font-size: 14px; font-weight: 700; margin-bottom: 12px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .stat-card h4 span { font-size: 11px; color: #9CA3AF; font-weight: 500; }
+
+  .chart-placeholder {
+    height: 140px; border-radius: 10px;
+    background: linear-gradient(180deg, #E8F5EE 0%, #F6F8F7 100%);
+    position: relative; overflow: hidden;
+  }
+  .chart-placeholder svg { width: 100%; height: 100%; }
+
+  .donut {
+    display: flex; align-items: center; gap: 16px;
+  }
+  .donut-ring {
+    width: 90px; height: 90px; border-radius: 50%;
+    background: conic-gradient(#13AB7B 0 66%, #FE8B4B 66% 90%, #E5E7EB 90% 100%);
+    position: relative;
+  }
+  .donut-ring::after {
+    content: ""; position: absolute; inset: 12px;
+    background: #fff; border-radius: 50%;
+  }
+  .donut-legend { font-size: 12px; color: #374151; display: flex; flex-direction: column; gap: 6px; }
+  .donut-legend div { display: flex; align-items: center; gap: 6px; }
+  .dot-green { width: 8px; height: 8px; background: #13AB7B; border-radius: 50%; }
+  .dot-orange { width: 8px; height: 8px; background: #FE8B4B; border-radius: 50%; }
+  .dot-gray { width: 8px; height: 8px; background: #E5E7EB; border-radius: 50%; }
+
+  .rank { display: flex; flex-direction: column; gap: 10px; font-size: 12px; color: #374151; }
+  .rank-row { display: flex; align-items: center; gap: 10px; }
+  .rank-bar { flex: 1; height: 6px; background: #F3F4F6; border-radius: 4px; overflow: hidden; }
+  .rank-bar span { display: block; height: 100%; background: #13AB7B; border-radius: 4px; }
+  .rank-row .val { width: 20px; text-align: right; color: #6B7280; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ---------- САЙДБАР ---------- -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">♥</div>
+      <div class="logo-text">
+        <h1>ArtKnit</h1>
+        <p>Кардиоцентр</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title">Рабочее пространство</div>
+      <nav class="nav">
+        <div class="nav-item active"><span class="ico">🏠</span> Главная</div>
+        <div class="nav-item"><span class="ico">👥</span> Пациенты</div>
+        <div class="nav-item"><span class="ico">📋</span> Записи</div>
+        <div class="nav-item"><span class="ico">📊</span> Аналитика</div>
+        <div class="nav-item"><span class="ico">📅</span> Календарь</div>
+      </nav>
+    </div>
+
+    <div>
+      <div class="section-title">Управление</div>
+      <nav class="nav">
+        <div class="nav-item"><span class="ico">🔔</span> Уведомления</div>
+        <div class="nav-item"><span class="ico">✅</span> Задачи</div>
+        <div class="nav-item"><span class="ico">💳</span> Финансы</div>
+        <div class="nav-item"><span class="ico">👤</span> Персонал</div>
+        <div class="nav-item"><span class="ico">⚙️</span> Настройки</div>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- ---------- ОСНОВНАЯ ОБЛАСТЬ ---------- -->
+  <main class="main">
+
+    <!-- Верхняя панель -->
+    <div class="topbar">
+      <div class="search">
+        🔍 <input placeholder="Поиск пациента по имени...">
+      </div>
+      <div class="topbar-right">
+        <div class="icon-btn">🔔<span class="dot"></span></div>
+        <div class="user">
+          <div class="avatar">АК</div>
+          <span>Кузнецова А.В. ▾</span>
+        </div>
+        <button class="btn-primary">+ Новая запись</button>
+      </div>
+    </div>
+
+    <!-- Жёлтый баннер маршрута -->
+    <div class="route-banner">
+      <div class="route-banner-head">⚠️ Пациент включён в диагностический маршрут</div>
+      <div class="route-banner-body">
+        <div><b>Основание:</b> УЗИ щитовидной железы от 11.09.2026</div>
+        <div><b>Рекомендация УЗИ:</b> консультация эндокринолога</div>
+        <div><b>Находка:</b> узел 15,9×6,3 мм, TI-RADS 3</div>
+        <div><b>Статус:</b> ожидает решения врача</div>
+      </div>
+      <div class="route-banner-actions">
+        <button class="btn-outline">Открыть протокол УЗИ</button>
+        <button class="btn-outline">История маршрута</button>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <!-- Левая колонка -->
+      <div>
+
+        <!-- Карточка пациента -->
+        <div class="card">
+          <div class="patient-head">
+            <div class="patient-avatar">СП</div>
+            <div class="patient-info">
+              <h2>Петров Сергей Андреевич</h2>
+              <p>65 лет · мужской · амбулаторная карта № 1024</p>
+            </div>
+          </div>
+          <div class="patient-meta">
+            <div><span>Дата приёма</span>11.09.2026</div>
+            <div><span>Время</span>10:30</div>
+            <div><span>Врач</span>Кузнецова А.В.</div>
+          </div>
+        </div>
+
+        <!-- Форма завершения приёма -->
+        <div class="card form-section">
+          <h3>Завершение приёма</h3>
+          <div class="form-hint">Требуется определить дальнейшую тактику</div>
+
+          <div class="tactics">
+            <label class="tactic"><input type="radio" name="tactic"><label>Оперативное лечение показано</label></label>
+            <label class="tactic"><input type="radio" name="tactic"><label>Требуется дополнительное обследование</label></label>
+            <label class="tactic"><input type="radio" name="tactic"><label>Динамическое наблюдение</label></label>
+            <label class="tactic"><input type="radio" name="tactic"><label>Операция не показана</label></label>
+            <label class="tactic"><input type="radio" name="tactic"><label>Пациент отказался</label></label>
+            <label class="tactic"><input type="radio" name="tactic"><label>Направление в другой профиль</label></label>
+          </div>
+
+          <textarea class="comment" placeholder="Комментарий врача..."></textarea>
+
+          <div class="form-actions">
+            <button class="btn-primary">Завершить приём</button>
+            <button class="btn-ghost">Отмена</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Правая колонка -->
+      <div>
+
+        <div class="stat-card">
+          <h4>Результаты обследований <span>Норма / отклонения</span></h4>
+          <div class="chart-placeholder">
+            <svg viewBox="0 0 300 140" preserveAspectRatio="none">
+              <path d="M0,100 C40,80 70,60 110,70 C150,80 180,40 220,50 C260,60 280,30 300,20"
+                    fill="none" stroke="#13AB7B" stroke-width="2.5"/>
+              <path d="M0,100 C40,80 70,60 110,70 C150,80 180,40 220,50 C260,60 280,30 300,20 L300,140 L0,140 Z"
+                    fill="#13AB7B" opacity="0.08"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <h4>Назначено / выполнено / просрочено</h4>
+          <div class="donut">
+            <div class="donut-ring"></div>
+            <div class="donut-legend">
+              <div><span class="dot-green"></span> Назначено — 64</div>
+              <div><span class="dot-orange"></span> Выполнено — 48</div>
+              <div><span class="dot-gray"></span> Просрочено — 9</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <h4>Рейтинг по сложности <span>По патологиям</span></h4>
+          <div class="rank">
+            <div class="rank-row">
+              <span style="width:120px;">Аномалия митрального клапана</span>
+              <div class="rank-bar"><span style="width:90%"></span></div>
+              <span class="val">9</span>
+            </div>
+            <div class="rank-row">
+              <span style="width:120px;">Эхокардиография</span>
+              <div class="rank-bar"><span style="width:70%"></span></div>
+              <span class="val">7</span>
+            </div>
+            <div class="rank-row">
+              <span style="width:120px;">Фибрилляция предсердий</span>
+              <div class="rank-bar"><span style="width:50%"></span></div>
+              <span class="val">5</span>
+            </div>
+            <div class="rank-row">
+              <span style="width:120px;">Пароксизмальная тахикардия</span>
+              <div class="rank-bar"><span style="width:30%"></span></div>
+              <span class="val">3</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>
