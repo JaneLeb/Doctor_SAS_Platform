@@ -332,6 +332,8 @@ observation	Мягкий	Только ЛК
 ## 🎬 Демо-экраны
 
 ## Дашборд руководителя
+<img width="1589" height="818" alt="image" src="https://github.com/user-attachments/assets/e6005650-8d8e-49aa-a853-e075c0b90282" />
+
 
 output/manager.html — реальные метрики (строится из реальных данных routes_audit.jsonl).
 
@@ -371,6 +373,9 @@ KPI-карточки:
 
 ### Экран врача
 
+<img width="1637" height="929" alt="image" src="https://github.com/user-attachments/assets/e879d6dc-5d46-4ef4-b9aa-6418fe3c54a2" />
+
+
 output/doctor_1030.html — Кардио, urgent.
 
 ### Что показывает
@@ -386,6 +391,9 @@ output/doctor_1030.html — Кардио, urgent.
 Правая колонка: «Почему такой маршрут?»
 
 ## Экран пациента
+
+<img width="1200" height="930" alt="image" src="https://github.com/user-attachments/assets/9f92e89c-72e9-4344-b28d-36ef4e9848df" />
+
 
 output/patient_1032.html — ЩЖ.
 
