@@ -104,28 +104,28 @@
 
 
 Отдельные команды
-              make help           # Полный список
-              make setup          # Установка (venv + зависимости)
-              make parse          # Пересобрать YAML из таблиц
-              make test-real      # Прогнать 89 реальных протоколов
-              make test           # Unit-тесты (pytest)
-              make demo           # Сгенерировать 9 HTML
-              make manager        # Построить дашборд
-              make open-doctor    # Открыть экран врача (Кардио, urgent)
-              make open-patient   # Открыть экран пациента (ЩЖ)
-              make open-manager   # Открыть дашборд
-              make open-all       # Все 3 ключевых экрана
-              make audit          # Журнал аудита (последние 5 записей)
-              make metrics        # Метрики (JSON)
-              make format         # Форматировать код (black + ruff)
-              make lint           # Проверить код (ruff)
-              make valgrind       # Проверить память (tracemalloc)
-              make coverage       # Покрытие тестами (pytest-cov)
-              make profile        # Профилирование узких мест
-              make dvi            # Открыть README
-              make dist           # Собрать дистрибутив (tar.gz)
-              make clean          # Очистить output/ и кэш
-              make clean-all      # Очистить + venv
+                  make help           # Полный список
+                  make setup          # Установка (venv + зависимости)
+                  make parse          # Пересобрать YAML из таблиц
+                  make test-real      # Прогнать 89 реальных протоколов
+                  make test           # Unit-тесты (pytest)
+                  make demo           # Сгенерировать 9 HTML
+                  make manager        # Построить дашборд
+                  make open-doctor    # Открыть экран врача (Кардио, urgent)
+                  make open-patient   # Открыть экран пациента (ЩЖ)
+                  make open-manager   # Открыть дашборд
+                  make open-all       # Все 3 ключевых экрана
+                  make audit          # Журнал аудита (последние 5 записей)
+                  make metrics        # Метрики (JSON)
+                  make format         # Форматировать код (black + ruff)
+                  make lint           # Проверить код (ruff)
+                  make valgrind       # Проверить память (tracemalloc)
+                  make coverage       # Покрытие тестами (pytest-cov)
+                  make profile        # Профилирование узких мест
+                  make dvi            # Открыть README
+                  make dist           # Собрать дистрибутив (tar.gz)
+                  make clean          # Очистить output/ и кэш
+                  make clean-all      # Очистить + venv
               
 
 ## 📂 Структура проекта
