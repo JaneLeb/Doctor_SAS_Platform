@@ -513,6 +513,7 @@ ArtKnit
 
 📞 Контакты
 GitHub: https://github.com/JaneLeb/Doctor_SAS_Platform/tree/develop/sm_clinic_routing
+artknit@info
 
 Сделано с ❤️ для СМ-Клиники
 
