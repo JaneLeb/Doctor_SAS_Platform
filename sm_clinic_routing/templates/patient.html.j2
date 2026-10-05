@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ArtKnit — Кардиоцентр | Личный кабинет пациента</title>
+<title>ArtKnit — Личный кабинет пациента</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { overflow-x: hidden; }
@@ -571,17 +571,17 @@
       <div class="topbar-right">
         <div class="icon-btn">🔔<span class="dot"></span></div>
         <div class="user">
-          <div class="avatar">АС</div>
-          <span>Иванова А.С. ▾</span>
+          <div class="avatar">{{ patient.initials }}</div>
+          <span>{{ patient.name }} ▾</span>
         </div>
       </div>
     </div>
 
     <!-- HERO -->
     <div class="hero">
-      <div class="hero-avatar">АС</div>
+      <div class="hero-avatar">{{ patient.initials }}</div>
       <div class="hero-text">
-        <h1>Здравствуйте, Анна Сергеевна!</h1>
+        <h1>Здравствуйте, {{ patient.name }}!</h1>
         <p>У вас есть новое уведомление по результатам исследования</p>
       </div>
       <div class="hero-status">
@@ -589,6 +589,22 @@
         <span>Маршрут активен · этап: <b>Профильный врач</b></span>
       </div>
     </div>
+
+    {% if route.status == "no_action" %}
+    <!-- ================= НЕТ НАХОДОК ================= -->
+    <div class="info-banner" style="background: #E8F5EE;">
+      <div class="ic" style="color: #13AB7B;">✓</div>
+      <div class="body">
+        <div class="t" style="color: #0F7A54;">Значимых находок не выявлено</div>
+        <div class="s" style="color: #1F5C40;">
+          По результатам <b>{{ route.basis }}</b> не обнаружено изменений,
+          требующих консультации профильного специалиста.
+        </div>
+      </div>
+    </div>
+
+    {% else %}
+    <!-- ================= ЕСТЬ МАРШРУТ ================= -->
 
     <!-- ИНФО-БАННЕР -->
     <div class="info-banner">
@@ -601,44 +617,40 @@
 
     <div class="grid">
 
-      <!-- ЛЕВАЯ КОЛОНКА: РЕЗУЛЬТАТ + ДООБСЛЕДОВАНИЕ -->
+      <!-- ЛЕВАЯ КОЛОНКА: РЕЗУЛЬТАТ + ЗАПИСЬ -->
       <div>
 
         <!-- РЕЗУЛЬТАТ УЗИ -->
         <div class="card">
           <div class="card-head">
             <h3><span class="icon">📄</span> Результат УЗИ</h3>
-            <span class="sub">26.08.2026 · № 458732</span>
+            <span class="sub">{{ route.basis }} · № {{ patient.card_id }}</span>
           </div>
 
           <div class="study-protocol">
             <div class="row">
               <div class="k">Область исследования</div>
-              <div class="v">Щитовидная железа</div>
-            </div>
-            <div class="row">
-              <div class="k">Общий объём</div>
-              <div class="v">25.6 см³ (увеличен)</div>
-            </div>
-            <div class="row">
-              <div class="k">Эхоструктура</div>
-              <div class="v">неоднородная</div>
+              <div class="v">{{ meta.organ_codes | join(', ') | upper }}</div>
             </div>
             <div class="row">
               <div class="k">Заключение</div>
-              <div class="v">Эхографические признаки узлового зоба (EU-TIRADS 3)</div>
+              <div class="v">{{ route.finding_summary }}</div>
             </div>
             <div class="row">
               <div class="k">Рекомендация УЗИ</div>
-              <div class="v">Консультация эндокринолога</div>
+              <div class="v">{{ route.recommendation }}</div>
+            </div>
+            <div class="row">
+              <div class="k">Срочность</div>
+              <div class="v">{{ route.status_label }}</div>
             </div>
           </div>
 
           <!-- Находка -->
           <div class="finding-box">
             <div class="title">⚠ На что обратить внимание</div>
-            <div class="text">В левой доле изоэхогенный узел 24×13 мм с активным периферическим кровотоком.</div>
-            <div class="quote">«…изоэхогенный узел 24×13 мм с активным периферическим кровотоком»</div>
+            <div class="text">{{ route.finding_summary }}</div>
+            <div class="quote">«{{ route.quote }}»</div>
           </div>
         </div>
 
@@ -652,11 +664,11 @@
           <div class="need-exam">
             <div class="head">
               <div class="ic">✓</div>
-              Консультация эндокринного хирурга
+              Консультация {{ route.specialist | join(' и ') }}
             </div>
             <div class="desc">
               По результатам УЗИ выявлены изменения, по которым рекомендуется консультация
-              <b>эндокринного хирурга</b> для определения дальнейшей тактики.
+              <b>{{ route.specialist | join(' и ') }}</b> для определения дальнейшей тактики.
               Выберите удобное время и место — мы уже подобрали для вас ближайшие слоты.
             </div>
 
@@ -666,7 +678,7 @@
                 <div class="slot-body">
                   <div class="when">Сегодня, 18:30</div>
                   <div class="where">Онлайн-консультация</div>
-                  <div class="doctor">Эндокринный хирург · Петров А.В.</div>
+                  <div class="doctor">{{ route.specialist[0] }} · Петров А.В.</div>
                 </div>
                 <span class="slot-badge online">Онлайн</span>
               </div>
@@ -676,7 +688,7 @@
                 <div class="slot-body">
                   <div class="when">Завтра, 10:30</div>
                   <div class="where">Клиника на Текстильщиках</div>
-                  <div class="doctor">Эндокринный хирург · Смирнова Е.И.</div>
+                  <div class="doctor">{{ route.specialist[0] }} · Смирнова Е.И.</div>
                 </div>
                 <span class="slot-badge offline">Очно</span>
               </div>
@@ -686,7 +698,7 @@
                 <div class="slot-body">
                   <div class="when">Завтра, 17:00</div>
                   <div class="where">Клиника на Сенежской</div>
-                  <div class="doctor">Эндокринный хирург · Кузнецов Д.М.</div>
+                  <div class="doctor">{{ route.specialist[0] }} · Кузнецов Д.М.</div>
                 </div>
                 <span class="slot-badge offline">Очно</span>
               </div>
@@ -696,7 +708,7 @@
                 <div class="slot-body">
                   <div class="when">29.08.2026, 12:00</div>
                   <div class="where">Онлайн-консультация</div>
-                  <div class="doctor">Эндокринный хирург · Петров А.В.</div>
+                  <div class="doctor">{{ route.specialist[0] }} · Петров А.В.</div>
                 </div>
                 <span class="slot-badge online">Онлайн</span>
               </div>
@@ -728,7 +740,7 @@
               <div class="circle">✓</div>
               <div class="body">
                 <div class="t">УЗИ выполнено</div>
-                <div class="s">26.08.2026 · Щитовидная железа</div>
+                <div class="s">{{ visit.date }} · {{ meta.organ_codes | join(', ') | upper }}</div>
               </div>
             </div>
 
@@ -736,14 +748,14 @@
               <div class="circle">✓</div>
               <div class="body">
                 <div class="t">Триггер распознан</div>
-                <div class="s">Узел 24×13 мм · TI-RADS 3</div>
+                <div class="s">{{ route.finding_summary }}</div>
               </div>
             </div>
 
             <div class="route-step current">
               <div class="circle">3</div>
               <div class="body">
-                <div class="t">Запись к эндокринному хирургу</div>
+                <div class="t">Запись к {{ route.specialist | join(', ') }}</div>
                 <div class="s">Выберите удобное время слева</div>
                 <div class="badge-current">Текущий этап</div>
               </div>
@@ -778,6 +790,7 @@
       </div>
 
     </div>
+    {% endif %}
 
   </main>
 </div>
@@ -821,7 +834,7 @@
       'Мы отправим подтверждение в личный кабинет и по SMS.'
     );
 
-    // Обновляем таймлайн — этап «Запись» становится выполненным
+    // Обновляем таймлайн
     const currentStep = document.querySelector('.route-step.current');
     if (currentStep) {
       currentStep.classList.remove('current');
@@ -830,7 +843,6 @@
       const badge = currentStep.querySelector('.badge-current');
       if (badge) badge.remove();
 
-      // Следующий этап — консультация — становится текущим
       const next = currentStep.nextElementSibling;
       if (next) {
         next.classList.add('current');
@@ -839,7 +851,6 @@
       }
     }
 
-    // Показываем подтверждение на кнопке
     const btn = document.getElementById('btnBook');
     btn.innerHTML = '✓ Вы записаны';
     btn.disabled = true;

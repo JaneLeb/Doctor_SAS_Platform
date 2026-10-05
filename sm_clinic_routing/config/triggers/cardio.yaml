@@ -12,16 +12,22 @@ keywords:
 - пж
 - лп
 - пп
+- глж
+- мжп
+- зслж
+- фв
+- фракция выброса
 - митральный клапан
 - аортальный клапан
 - трикуспидальный
-- фракция выброса
-- фв
-- гипертрофия
-- дилатация
 - перикард
 - легочная артерия
 - сдла
+- аорта
+- регургитация
+- гипокинезия
+- акинезия
+- диастолическая дисфункция
 findings:
 - id: cardio_gipertrofiya_levogo_zheludochka
   synonyms:
@@ -34,28 +40,29 @@ findings:
   is_negative: false
   urgency: planned
   source: Гипертрофия левого желудочка / ГЛЖ / утолщение стенок ЛЖ / утолщение МЖП и ЗСЛЖ
+  regex: (?i)(гипертрофи[яи]|глж|утолщен(ие|ия)\s+(стенок\s+лж|мжп|зслж))
 - id: cardio_dilatatsiya_levogo_zheludochka
   synonyms:
   - дилатация левого желудочка
   - расширение лж
   - увеличение полости лж
-  - лж до мм
   specialist:
   - Кардиолог
   is_negative: false
   urgency: planned
-  source: Дилатация левого желудочка / расширение ЛЖ / увеличение полости ЛЖ / ЛЖ до ... мм
+  source: Дилатация левого желудочка / расширение ЛЖ / увеличение полости ЛЖ
+  regex: (?i)(дилат[аи]ци[яи]|расширен(ие|ия)\s+(камер|полост[еи]|лж|лп)|увеличен(ие|ия)\s+(полости|полостей|лж|лп))
 - id: cardio_dilatatsiya_levogo_predserdiya
   synonyms:
   - дилатация левого предсердия
   - расширение лп
   - увеличение полости лп
-  - лп до мм
   specialist:
   - Кардиолог
   is_negative: false
   urgency: planned
-  source: Дилатация левого предсердия / расширение ЛП / увеличение полости ЛП / ЛП до ... мм
+  source: Дилатация левого предсердия / расширение ЛП / увеличение полости ЛП
+  regex: null
 - id: cardio_snizhenie_globalnoy_sokratimosti_lzh
   synonyms:
   - снижение глобальной сократимости лж
@@ -65,8 +72,9 @@ findings:
   specialist:
   - Кардиолог
   is_negative: false
-  urgency: planned
+  urgency: urgent
   source: Снижение глобальной сократимости ЛЖ / снижение ФВ / фракция выброса менее 50% / систолическая дисфункция
+  regex: (?i)(снижен(ие|ия)\s+(сократимости|фв|систолической\s+функции)|фракци[яи]\s+выброса\s+менее\s+50|фв\s*<\s*50)
 - id: cardio_fraktsiya_vybrosa_v_norme
   synonyms:
   - фракция выброса в норме
@@ -77,6 +85,7 @@ findings:
   is_negative: true
   urgency: observation
   source: Фракция выброса в норме / сохранная сократимость / ФВ более 55% / систолическая функция сохранена
+  regex: (?i)(сохранная\s+сократимость|функция\s+сохранена|фв\s+в\s+норме|фв\s*>\s*50|фв\s*=\s*(5[5-9]|[6-9]\d))
 - id: cardio_zony_gipokinezii
   synonyms:
   - зоны гипокинезии
@@ -87,8 +96,9 @@ findings:
   - Кардиолог
   - Аритмолог
   is_negative: false
-  urgency: planned
+  urgency: urgent
   source: Зоны гипокинезии / локальное нарушение сократимости / гипокинез стенки ЛЖ / акинез
+  regex: (?i)(гипокинез[а]?|акинез[а]?|локально(е|го)\s+нарушен(ие|ия)\s+сократимости|зоны\s+гипокинезии)
 - id: cardio_diastolicheskaya_disfunktsiya_lzh
   synonyms:
   - диастолическая дисфункция лж
@@ -99,6 +109,7 @@ findings:
   is_negative: false
   urgency: planned
   source: Диастолическая дисфункция ЛЖ / нарушение расслабления ЛЖ / диастолическая дисфункция 1 типа
+  regex: (?i)(диастолическ[аяоий]{2,4}\s+дисфункци[яи]|нарушен(ие|ия)\s+расслабления\s+лж)
 - id: cardio_ateroskleroz_aorty
   synonyms:
   - атеросклероз аорты
@@ -111,6 +122,7 @@ findings:
   is_negative: false
   urgency: planned
   source: Атеросклероз аорты / уплотнение стенок аорты / кальциноз аорты / склероз стенок аорты
+  regex: (?i)(атеросклероз\s+аорты|уплотнен(ие|ия)\s+(стенок\s+)?аорты|кальциноз\s+аорты)
 - id: cardio_dilatatsiya_kornya_aorty
   synonyms:
   - дилатация корня аорты
@@ -122,6 +134,7 @@ findings:
   is_negative: false
   urgency: planned
   source: Дилатация корня аорты / расширение восходящего отдела аорты / аорта до ... мм
+  regex: (?i)(дилат[аи]ци[яи]\s+(корня\s+)?аорты|расширен(ие|ия)\s+восходящего\s+отдела)
 - id: cardio_nedostatochnost_mitralnogo_klapana
   synonyms:
   - недостаточность митрального клапана
@@ -132,6 +145,7 @@ findings:
   is_negative: false
   urgency: planned
   source: Недостаточность митрального клапана / митральная регургитация / МК регургитация 1-2 степени
+  regex: (?i)(недостаточность\s+\w+\s+клапана|регургитаци[яи]\s+\d\s*(-ая|-я)?\s*(ст(еп)?|степени)?)
 - id: cardio_stenoz_mitralnogo_klapana
   synonyms:
   - стеноз митрального клапана
@@ -141,8 +155,9 @@ findings:
   - Кардиолог
   - Сердечно-сосудистый хирург
   is_negative: false
-  urgency: planned
+  urgency: urgent
   source: Стеноз митрального клапана / митральный стеноз / кальциноз створок МК с ограничением открытия
+  regex: null
 - id: cardio_prolaps_mitralnogo_klapana
   synonyms:
   - пролапс митрального клапана
@@ -151,10 +166,10 @@ findings:
   - пмк 1 степени
   specialist:
   - Кардиолог
-  - Педиатр
   is_negative: false
   urgency: planned
   source: Пролапс митрального клапана / ПМК / прогиб створок МК в полость ЛП / ПМК 1 степени
+  regex: (?i)(пролапс\s+(митрального\s+клапана|мк)|пмк(\s+\d)?\s*ст)
 - id: cardio_nedostatochnost_aortalnogo_klapana
   synonyms:
   - недостаточность аортального клапана
@@ -165,6 +180,7 @@ findings:
   is_negative: false
   urgency: planned
   source: Недостаточность аортального клапана / аортальная регургитация / АК регургитация 1 степени
+  regex: null
 - id: cardio_stenoz_aortalnogo_klapana
   synonyms:
   - стеноз аортального клапана
@@ -175,8 +191,9 @@ findings:
   - Кардиолог
   - Сердечно-сосудистый хирург
   is_negative: false
-  urgency: planned
+  urgency: urgent
   source: Стеноз аортального клапана / аортальный стеноз / сужение аортального отверстия / кальциноз АК
+  regex: null
 - id: cardio_nedostatochnost_trikuspidalnogo_klapana
   synonyms:
   - недостаточность трикуспидального клапана
@@ -187,6 +204,7 @@ findings:
   is_negative: false
   urgency: planned
   source: Недостаточность трикуспидального клапана / трикуспидальная регургитация / ТК регургитация 1-2 ст.
+  regex: null
 - id: cardio_legochnaya_gipertenziya
   synonyms:
   - легочная гипертензия
@@ -196,8 +214,9 @@ findings:
   - Кардиолог
   - Пульмонолог
   is_negative: false
-  urgency: planned
+  urgency: urgent
   source: Легочная гипертензия / повышение давления в легочной артерии / СДЛА более 35 мм рт.ст.
+  regex: (?i)(легочн[аяоий]{2,4}\s+гипертензи[яи]|сдла\s*(>|более)\s*35|повышен(ие|ия)\s+давления\s+в\s+ла)
 - id: cardio_davlenie_v_legochnoy_arterii_v_norme
   synonyms:
   - давление в легочной артерии в норме
@@ -207,6 +226,7 @@ findings:
   is_negative: true
   urgency: observation
   source: Давление в легочной артерии в норме / СДЛА в норме / признаков легочной гипертензии не выявлено
+  regex: null
 - id: cardio_zhidkost_v_polosti_perikarda
   synonyms:
   - жидкость в полости перикарда
@@ -216,8 +236,9 @@ findings:
   specialist:
   - Кардиолог
   is_negative: false
-  urgency: planned
+  urgency: urgent
   source: Жидкость в полости перикарда / выпот в перикарде / гидроперикард / сепарация листков перикарда до ... мм
+  regex: (?i)(жидкость\s+в\s+(полости\s+)?перикарда|выпот\s+в\s+перикарде|гидроперикард)
 - id: cardio_zhidkosti_v_polosti_perikarda_ne_vyyavle
   synonyms:
   - жидкости в полости перикарда не выявлено
@@ -227,6 +248,7 @@ findings:
   is_negative: true
   urgency: observation
   source: Жидкости в полости перикарда не выявлено / листки перикарда сомкнуты / физиологическое количество жидкости
+  regex: null
 - id: cardio_dopolnitelnaya_horda_lzh
   synonyms:
   - дополнительная хорда лж
@@ -237,6 +259,7 @@ findings:
   is_negative: true
   urgency: observation
   source: Дополнительная хорда ЛЖ / ДХЛЖ / аномально расположенная хорда / ложная хорда ЛЖ
+  regex: (?i)(дополнительн[аяоий]{2,4}\s+хорда|дхлж|ложная\s+хорда|аномальн[аяоий]{2,4}\s+расположенная\s+хорда)
 - id: cardio_otkrytoe_ovalnoe_okno
   synonyms:
   - открытое овальное окно
@@ -249,6 +272,7 @@ findings:
   is_negative: false
   urgency: planned
   source: Открытое овальное окно / ООО / патентное овальное окно / сброс крови на уровне предсердий
+  regex: (?i)(открытое\s+овальное\s+окно|ооо|сброс\s+крови\s+на\s+уровне\s+предсердий)
 - id: cardio_dilatatsiya_pravyh_kamer_serdtsa
   synonyms:
   - дилатация правых камер сердца
@@ -260,6 +284,7 @@ findings:
   is_negative: false
   urgency: planned
   source: Дилатация правых камер сердца / расширение ПЖ и ПП / увеличение правого желудочка
+  regex: null
 - id: cardio_narusheniya_vnutriserdechnoy_gemodinamik
   synonyms:
   - нарушения внутрисердечной гемодинамики не выявлено
@@ -268,3 +293,4 @@ findings:
   is_negative: true
   urgency: observation
   source: Нарушения внутрисердечной гемодинамики не выявлено / показатели в пределах возрастной нормы
+  regex: null

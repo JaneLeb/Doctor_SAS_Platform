@@ -22,33 +22,63 @@ log = logging.getLogger("preprocessor")
 
 # Сокращения — НЕ разрываем предложение после них, если следующее слово строчное
 ABBREVIATIONS = [
-    "см", "мм", "мл", "кг", "г", "мг", "ед", "тыс", "млн",
-    "т.е", "т.к", "т.д", "т.п", "др", "рис", "табл", "стр",
-    "им", "г-н", "г-жа", "ул", "кв", "корп", "оф",
-    "н/д", "б/н", "ч/з", "и.о", "в.и", "г.в",
+    "см",
+    "мм",
+    "мл",
+    "кг",
+    "г",
+    "мг",
+    "ед",
+    "тыс",
+    "млн",
+    "т.е",
+    "т.к",
+    "т.д",
+    "т.п",
+    "др",
+    "рис",
+    "табл",
+    "стр",
+    "им",
+    "г-н",
+    "г-жа",
+    "ул",
+    "кв",
+    "корп",
+    "оф",
+    "н/д",
+    "б/н",
+    "ч/з",
+    "и.о",
+    "в.и",
+    "г.в",
 ]
 
 # Унификация символов. ВНИМАНИЕ: НЕ заменяем русскую "х" на латинскую "x"!
 CHAR_REPLACEMENTS = {
-    "ё": "е", "Ё": "Е",
-    "\u00a0": " ",       # неразрывный пробел
-    "\u2013": "-",       # en dash
-    "\u2014": "-",       # em dash
-    "\u2018": "'", "\u2019": "'",
-    "\u201c": '"', "\u201d": '"',
-    "×": "x",            # знак умножения U+00D7
+    "ё": "е",
+    "Ё": "Е",
+    "\u00a0": " ",  # неразрывный пробел
+    "\u2013": "-",  # en dash
+    "\u2014": "-",  # em dash
+    "\u2018": "'",
+    "\u2019": "'",
+    "\u201c": '"',
+    "\u201d": '"',
+    "×": "x",  # знак умножения U+00D7
 }
 
 
 @dataclass
 class PreprocessedText:
     """Результат предобработки."""
+
     original: str
     normalized: str
     sentences: list[str] = field(default_factory=list)
     organ_codes: list[str] = field(default_factory=list)
     organ_scores: dict[str, int] = field(default_factory=dict)
-    primary_organ: str = ""      
+    primary_organ: str = ""
 
 
 class Preprocessor:
@@ -62,8 +92,29 @@ class Preprocessor:
             print(s)
     """
 
-    def __init__(self, config: "Config | None" = None):
+    def __init__(self, config: Config | None = None):
         self.config = config
+        # Предкомпилированные regex для keywords органов
+        self._compiled_keywords: dict[str, list] = {}
+        self._compile_organ_keywords()
+
+    def _compile_organ_keywords(self) -> None:
+        """Компилирует regex для keywords всех органов один раз."""
+        if not self.config or not self.config.organs:
+            return
+
+        for code, organ in self.config.organs.items():
+            keywords = getattr(organ, "keywords", []) or []
+            compiled = []
+            for kw in keywords:
+                pattern_str = self._keyword_to_pattern(kw)
+                if not pattern_str:
+                    continue
+                try:
+                    compiled.append(re.compile(pattern_str, re.IGNORECASE))
+                except re.error:
+                    continue
+            self._compiled_keywords[code] = compiled
 
     # ------------------------------------------------------------------
     #  Нормализация
@@ -206,18 +257,12 @@ class Preprocessor:
         text_lower = text.lower()
         scores: dict[str, int] = {}
 
-        for code, organ in self.config.organs.items():
-            keywords = getattr(organ, "keywords", []) or []
+        for code in self.config.organs:
+            # Используем предкомпилированные regex
+            compiled = self._compiled_keywords.get(code, [])
             score = 0
-            for kw in keywords:
-                pattern = self._keyword_to_pattern(kw)
-                if not pattern:
-                    continue
-                try:
-                    count = len(re.findall(pattern, text_lower))
-                    score += count
-                except re.error as e:
-                    log.warning(f"Ошибка в regex для '{kw}': {e}")
+            for pattern in compiled:
+                score += len(pattern.findall(text_lower))
             if score > 0:
                 scores[code] = score
 
@@ -235,6 +280,7 @@ class Preprocessor:
 
         normalized = self.normalize(text)
         sentences = self.split_sentences(normalized)
+        # Орган обычно упоминается в начале — ищем в первых 5000 символов
         organ_codes, scores = self.detect_organs(normalized)
 
         # Первичный орган — с максимальным счётом
@@ -246,7 +292,7 @@ class Preprocessor:
             sentences=sentences,
             organ_codes=organ_codes,
             organ_scores=scores,
-            primary_organ=primary,       
+            primary_organ=primary,
         )
 
 
@@ -259,6 +305,7 @@ if __name__ == "__main__":
 
     import sys
     from pathlib import Path
+
     sys.path.insert(0, str(Path(__file__).parent))
     from config_loader import ConfigLoader
 

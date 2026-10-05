@@ -49,17 +49,57 @@ log = logging.getLogger("parse_tables")
 #                        ОБЩИЕ УТИЛИТЫ
 # ============================================================================
 
+
 def slugify(text: str) -> str:
     """Преобразует строку в безопасный slug: 'Полип эндометрия' → 'polip_endometriya'."""
     text = text.lower().strip()
     trans = {
-        "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e",
-        "ж": "zh", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m",
-        "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u",
-        "ф": "f", "х": "h", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "sch",
-        "ъ": "", "ы": "y", "ь": "", "э": "e", "ю": "yu", "я": "ya",
-        " ": "_", "-": "_", "/": "_", ",": "", ".": "", "(": "", ")": "",
-        "?": "", "!": "", ":": "", ";": "", '"': "", "'": "",
+        "а": "a",
+        "б": "b",
+        "в": "v",
+        "г": "g",
+        "д": "d",
+        "е": "e",
+        "ё": "e",
+        "ж": "zh",
+        "з": "z",
+        "и": "i",
+        "й": "y",
+        "к": "k",
+        "л": "l",
+        "м": "m",
+        "н": "n",
+        "о": "o",
+        "п": "p",
+        "р": "r",
+        "с": "s",
+        "т": "t",
+        "у": "u",
+        "ф": "f",
+        "х": "h",
+        "ц": "ts",
+        "ч": "ch",
+        "ш": "sh",
+        "щ": "sch",
+        "ъ": "",
+        "ы": "y",
+        "ь": "",
+        "э": "e",
+        "ю": "yu",
+        "я": "ya",
+        " ": "_",
+        "-": "_",
+        "/": "_",
+        ",": "",
+        ".": "",
+        "(": "",
+        ")": "",
+        "?": "",
+        "!": "",
+        ":": "",
+        ";": "",
+        '"': "",
+        "'": "",
     }
     result = []
     for ch in text:
@@ -117,11 +157,19 @@ def write_yaml(path: Path, data: dict[str, Any]) -> None:
     """Пишет YAML с заголовком."""
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
-        f.write(f"# Автоматически сгенерировано parse_tables.py\n")
+        f.write("# Автоматически сгенерировано parse_tables.py\n")
         f.write(f"# Источник: {path.stem}\n")
-        f.write(f"# НЕ РЕДАКТИРОВАТЬ ВРУЧНУЮ — правьте исходные таблицы и перезапускайте\n\n")
-        yaml.dump(data, f, allow_unicode=True, sort_keys=False,
-                  default_flow_style=False, width=120)
+        f.write(
+            "# НЕ РЕДАКТИРОВАТЬ ВРУЧНУЮ — правьте исходные таблицы и перезапускайте\n\n"
+        )
+        yaml.dump(
+            data,
+            f,
+            allow_unicode=True,
+            sort_keys=False,
+            default_flow_style=False,
+            width=120,
+        )
     log.info(f"  → записан {path}")
 
 
@@ -129,8 +177,12 @@ def write_yaml(path: Path, data: dict[str, Any]) -> None:
 #                   ПАРСЕРЫ XLSX
 # ============================================================================
 
+
 def parse_synonym_table(
-    path: Path, organ_code: str, organ_name: str, keywords: list[str],
+    path: Path,
+    organ_code: str,
+    organ_name: str,
+    keywords: list[str],
 ) -> dict[str, Any]:
     """Читает .xlsx с колонками: Находка, Врач."""
     log.info(f"Читаю {path.name}...")
@@ -163,16 +215,20 @@ def parse_synonym_table(
             base_id = f"{base_id}_{len(findings)}"
         seen_ids.add(base_id)
 
-        findings.append({
-            "id": base_id,
-            "synonyms": synonyms,
-            "specialist": specialists,
-            "is_negative": is_negative,
-            "urgency": "observation" if is_negative else "planned",
-            "source": finding_str,
-        })
+        findings.append(
+            {
+                "id": base_id,
+                "synonyms": synonyms,
+                "specialist": specialists,
+                "is_negative": is_negative,
+                "urgency": "observation" if is_negative else "planned",
+                "source": finding_str,
+            }
+        )
 
-    log.info(f"  → {len(findings)} находок (негативных: {sum(1 for f in findings if f['is_negative'])})")
+    log.info(
+        f"  → {len(findings)} находок (негативных: {sum(1 for f in findings if f['is_negative'])})"
+    )
     return {
         "organ_code": organ_code,
         "organ_name": organ_name,
@@ -228,7 +284,11 @@ def parse_sizes_table(path: Path) -> dict[str, Any]:
         param = str(row[col_param]).strip() if not pd.isna(row[col_param]) else ""
         normal = str(row[col_normal]).strip() if not pd.isna(row[col_normal]) else ""
         trigger = str(row[col_trigger]).strip() if not pd.isna(row[col_trigger]) else ""
-        doctor = str(row[col_doctor]).strip() if col_doctor and not pd.isna(row[col_doctor]) else ""
+        doctor = (
+            str(row[col_doctor]).strip()
+            if col_doctor and not pd.isna(row[col_doctor])
+            else ""
+        )
 
         if not organ or not param:
             continue
@@ -239,25 +299,30 @@ def parse_sizes_table(path: Path) -> dict[str, Any]:
         operator = "<" if "<" in trigger else ">"
         specialists = parse_specialist(doctor)
 
-        organs.setdefault(organ, []).append({
-            "param": param,
-            "normal": normal,
-            "normal_range": [normal_lo, normal_hi],
-            "trigger_text": trigger,
-            "threshold": threshold,
-            "unit": unit,
-            "operator": operator,
-            "specialist": specialists,
-            "is_negative": len(specialists) == 0,
-        })
+        organs.setdefault(organ, []).append(
+            {
+                "param": param,
+                "normal": normal,
+                "normal_range": [normal_lo, normal_hi],
+                "trigger_text": trigger,
+                "threshold": threshold,
+                "unit": unit,
+                "operator": operator,
+                "specialist": specialists,
+                "is_negative": len(specialists) == 0,
+            }
+        )
 
-    log.info(f"  → {len(organs)} органов, {sum(len(v) for v in organs.values())} параметров")
+    log.info(
+        f"  → {len(organs)} органов, {sum(len(v) for v in organs.values())} параметров"
+    )
     return {"organs": organs}
 
 
 # ============================================================================
 #                   ПАРСЕРЫ TXT/CSV
 # ============================================================================
+
 
 def parse_zhp(path: Path) -> dict[str, Any]:
     """Читает ЖП.txt: 'Триггер и синонимы,Врач'."""
@@ -282,65 +347,145 @@ def parse_zhp(path: Path) -> dict[str, Any]:
             if base_id in seen_ids:
                 base_id = f"{base_id}_{len(findings)}"
             seen_ids.add(base_id)
-            findings.append({
-                "id": base_id, "synonyms": synonyms, "specialist": specialists,
-                "is_negative": is_negative,
-                "urgency": "observation" if is_negative else "planned",
-                "source": finding_raw,
-            })
+            findings.append(
+                {
+                    "id": base_id,
+                    "synonyms": synonyms,
+                    "specialist": specialists,
+                    "is_negative": is_negative,
+                    "urgency": "observation" if is_negative else "planned",
+                    "source": finding_raw,
+                }
+            )
 
     log.info(f"  → {len(findings)} находок")
     return {
         "organ_code": "zhp",
         "organ_name": "Желчный пузырь и гепатобилиарная зона",
         "keywords": [
-            "желчный пузырь", "жп", "печень", "поджелудочная железа",
-            "холедох", "портальная вена", "желчевыводящие", "гепатомегалия",
-            "холецистит", "конкременты", "полип желчного пузыря",
+            "желчный пузырь",
+            "жп",
+            "печень",
+            "поджелудочная железа",
+            "холедох",
+            "портальная вена",
+            "желчевыводящие",
+            "гепатомегалия",
+            "холецистит",
+            "конкременты",
+            "полип желчного пузыря",
         ],
         "findings": findings,
     }
 
 
 def parse_cardio(path: Path) -> dict[str, Any]:
-    """Читает klinicheskie_nahodki_serdca.csv: 'Находка,Врач'."""
+    """
+    Читает Кардио.xlsx:
+      A: Находка и синонимы
+      B: Врач
+      C: RegEx (опционально)
+      D: Срочность (опционально)
+    """
     log.info(f"Читаю {path.name}...")
+    df = pd.read_excel(path, header=0)
+    cols = list(df.columns)
+
+    if len(cols) < 2:
+        raise ValueError(f"{path.name}: ожидалось ≥2 колонок")
+
+    col_finding = cols[0]
+    col_doctor = cols[1]
+    col_regex = cols[2] if len(cols) > 2 else None
+    col_urgency = cols[3] if len(cols) > 3 else None
+
     findings, seen_ids = [], set()
 
-    with open(path, "r", encoding="utf-8-sig") as f:
-        reader = csv.reader(f)
-        next(reader, None)
-        for row in reader:
-            if not row or len(row) < 2:
-                continue
-            finding_raw, doctor_raw = row[0].strip(), row[1].strip()
-            if not finding_raw:
-                continue
-            synonyms = split_synonyms(finding_raw)
-            if not synonyms:
-                continue
-            specialists = parse_specialist(doctor_raw)
-            is_negative = len(specialists) == 0
-            base_id = f"cardio_{slugify(synonyms[0])[:40]}"
-            if base_id in seen_ids:
-                base_id = f"{base_id}_{len(findings)}"
-            seen_ids.add(base_id)
-            findings.append({
-                "id": base_id, "synonyms": synonyms, "specialist": specialists,
-                "is_negative": is_negative,
-                "urgency": "observation" if is_negative else "planned",
-                "source": finding_raw,
-            })
+    for _, row in df.iterrows():
+        finding_raw = row[col_finding]
+        doctor_raw = row[col_doctor]
+        if pd.isna(finding_raw) or str(finding_raw).strip() in ("", "nan"):
+            continue
 
-    log.info(f"  → {len(findings)} находок")
+        finding_str = str(finding_raw).strip()
+        doctor_str = str(doctor_raw).strip() if not pd.isna(doctor_raw) else ""
+
+        # RegEx
+        regex_str: str | None = None
+        if col_regex is not None and not pd.isna(row[col_regex]):
+            regex_str = str(row[col_regex]).strip()
+            if regex_str.lower() in ("", "nan", "none"):
+                regex_str = None
+            else:
+                try:
+                    re.compile(regex_str)
+                except re.error as e:
+                    log.warning(f"  Некорректный RegEx {regex_str!r} → {e}")
+                    regex_str = None
+
+        # Срочность
+        urgency = "planned"
+        if col_urgency is not None and not pd.isna(row[col_urgency]):
+            u = str(row[col_urgency]).strip().lower()
+            if u in ("planned", "urgent", "emergency", "oncological", "observation"):
+                urgency = u
+
+        synonyms = split_synonyms(finding_str)
+        if not synonyms:
+            continue
+
+        specialists = parse_specialist(doctor_str)
+        is_negative = len(specialists) == 0
+
+        base_id = f"cardio_{slugify(synonyms[0])[:40]}"
+        if base_id in seen_ids:
+            base_id = f"{base_id}_{len(findings)}"
+        seen_ids.add(base_id)
+
+        findings.append(
+            {
+                "id": base_id,
+                "synonyms": synonyms,
+                "specialist": specialists,
+                "is_negative": is_negative,
+                "urgency": "observation" if is_negative else urgency,
+                "source": finding_str,
+                "regex": regex_str,
+            }
+        )
+
+    log.info(
+        f"  → {len(findings)} находок "
+        f"(с regex: {sum(1 for f in findings if f['regex'])})"
+    )
+
     return {
         "organ_code": "cardio",
         "organ_name": "Сердце и сосуды (ЭхоКГ)",
         "keywords": [
-            "эхокардиография", "эхокг", "сердце", "лж", "пж", "лп", "пп",
-            "митральный клапан", "аортальный клапан", "трикуспидальный",
-            "фракция выброса", "фв", "гипертрофия", "дилатация",
-            "перикард", "легочная артерия", "сдла",
+            "эхокардиография",
+            "эхокг",
+            "сердце",
+            "лж",
+            "пж",
+            "лп",
+            "пп",
+            "глж",
+            "мжп",
+            "зслж",
+            "фв",
+            "фракция выброса",
+            "митральный клапан",
+            "аортальный клапан",
+            "трикуспидальный",
+            "перикард",
+            "легочная артерия",
+            "сдла",
+            "аорта",
+            "регургитация",
+            "гипокинезия",
+            "акинезия",
+            "диастолическая дисфункция",
         ],
         "findings": findings,
     }
@@ -357,7 +502,11 @@ def parse_cardio_regex(path: Path) -> dict[str, Any]:
         for row in reader:
             if not row or len(row) < 3:
                 continue
-            finding_raw, regex_raw, doctor_raw = row[0].strip(), row[1].strip().strip('"'), row[2].strip()
+            finding_raw, regex_raw, doctor_raw = (
+                row[0].strip(),
+                row[1].strip().strip('"'),
+                row[2].strip(),
+            )
             if not regex_raw:
                 continue
             try:
@@ -371,12 +520,16 @@ def parse_cardio_regex(path: Path) -> dict[str, Any]:
             if base_id in seen_ids:
                 base_id = f"{base_id}_{len(patterns)}"
             seen_ids.add(base_id)
-            patterns.append({
-                "id": base_id, "source": finding_raw, "regex": regex_raw,
-                "specialist": specialists,
-                "is_negative": is_negative,
-                "urgency": "observation" if is_negative else "planned",
-            })
+            patterns.append(
+                {
+                    "id": base_id,
+                    "source": finding_raw,
+                    "regex": regex_raw,
+                    "specialist": specialists,
+                    "is_negative": is_negative,
+                    "urgency": "observation" if is_negative else "planned",
+                }
+            )
 
     log.info(f"  → {len(patterns)} RegEx-паттернов")
     return {
@@ -410,6 +563,21 @@ def parse_disputes(path: Path) -> dict[str, Any]:
             if not category or not situation:
                 continue
             synonyms = split_synonyms(triggers_raw)
+
+            # Фильтр: убираем синонимы, которые слишком общие
+            # для спорной ситуации (могут давать ложные срабатывания)
+            FILTER_OUT = {
+                "фиброаденома",
+                "фиброаденома?",
+                "узел",
+                "узлы",
+                "киста",
+                "кисты",
+                "образование",
+                "образования",
+            }
+            synonyms = [s for s in synonyms if s.lower() not in FILTER_OUT]
+
             if not synonyms:
                 continue
             specialists = parse_specialist(routes_raw)
@@ -441,17 +609,75 @@ def parse_disputes(path: Path) -> dict[str, Any]:
 # ============================================================================
 
 ORGAN_KEYWORDS = {
-    "omt": ["органы малого таза", "омт", "матка", "яичник", "эндометрий",
-            "миометрий", "шейка матки", "м-эхо", "цервикальный канал"],
-    "pzh": ["предстательная железа", "пж", "простата", "семенные пузырьки",
-            "переходная зона", "парапростатическая"],
-    "mzh": ["молочная железа", "молочные железы", "мж", "би-rads", "bi-rads",
-            "млечные протоки", "фиброаденома"],
-    "nk":  ["артерии нижних конечностей", "вены нижних конечностей",
-            "бпв", "мпв", "збба", "пбба", "оба", "пба", "пка", "тас",
-            "ким", "асб", "стеноз", "окклюзия", "рефлюкс", "тромбоз"],
-    "zhp": ["желчный пузырь", "жп", "печень", "поджелудочная железа",
-            "холедох", "портальная вена", "желчевыводящие"],
+    "omt": [
+        "органы малого таза",
+        "омт",
+        "матка",
+        "яичник",
+        "эндометрий",
+        "миометрий",
+        "шейка матки",
+        "м-эхо",
+        "цервикальный канал",
+    ],
+    "pzh": [
+        "предстательная железа",
+        "пж",
+        "простата",
+        "семенные пузырьки",
+        "переходная зона",
+        "парапростатическая",
+    ],
+    "mzh": [
+        "молочная железа",
+        "молочные железы",
+        "мж",
+        "би-rads",
+        "bi-rads",
+        "млечные протоки",
+        "фиброаденома",
+    ],
+    "nk": [
+        "артерии нижних конечностей",
+        "вены нижних конечностей",
+        "бпв",
+        "мпв",
+        "збба",
+        "пбба",
+        "оба",
+        "пба",
+        "пка",
+        "тас",
+        "ким",
+        "асб",
+        "стеноз",
+        "окклюзия",
+        "рефлюкс",
+        "тромбоз",
+    ],
+    "zhp": [
+        "желчный пузырь",
+        "жп",
+        "печень",
+        "поджелудочная железа",
+        "холедох",
+        "портальная вена",
+        "желчевыводящие",
+    ],
+    "thyroid": [
+        "щитовидная железа",
+        "щитовидной железы",
+        "щж",
+        "тиреоидная",
+        "перешеек",
+        "правая доля",
+        "левая доля",
+        "ti-rads",
+        "eu-tirads",
+        "ти-радс",
+        "узловой зоб",
+        "аит",
+    ],
 }
 
 
@@ -469,8 +695,10 @@ def parse_all_xlsx(input_dir: Path, output_dir: Path) -> None:
         candidates = [
             input_dir / f"{code.upper()}.xlsx",
             input_dir / f"{code.capitalize()}.xlsx",
-            input_dir / {"omt": "ОМТ.xlsx", "pzh": "ПЖ.xlsx",
-                         "mzh": "МЖ.xlsx", "nk": "НК.xlsx"}[code],
+            input_dir
+            / {"omt": "ОМТ.xlsx", "pzh": "ПЖ.xlsx", "mzh": "МЖ.xlsx", "nk": "НК.xlsx"}[
+                code
+            ],
         ]
         path = next((p for p in candidates if p.exists()), None)
         if not path:
@@ -499,22 +727,13 @@ def parse_all_txt(input_dir: Path, output_dir: Path) -> None:
     else:
         log.warning(f"Не найден {zhp_path}")
 
-    # Кардио (синонимы)
-    cardio_path = input_dir / "klinicheskie_nahodki_serdca.csv"
+    # Кардио (единый xlsx: находки + regex)
+    cardio_path = input_dir / "Кардио.xlsx"
     if cardio_path.exists():
         data = parse_cardio(cardio_path)
         write_yaml(triggers_dir / "cardio.yaml", data)
     else:
-        log.warning(f"Не найден {cardio_path}")
-
-    # Кардио (RegEx)
-    cardio_re_path = input_dir / "ekhg_patterns_with_regex.csv"
-    if cardio_re_path.exists():
-        data = parse_cardio_regex(cardio_re_path)
-        write_yaml(triggers_dir / "cardio_regex.yaml", data)
-    else:
-        log.warning(f"Не найден {cardio_re_path}")
-
+        log.warning(f"Не найден {cardio_path} — пропускаю кардио")
     # Спорные ситуации
     disputes_path = input_dir / "спорные ситуации.txt"
     if disputes_path.exists():

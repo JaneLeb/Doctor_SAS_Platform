@@ -42,6 +42,7 @@ SOFT_TRIGGERS = [
 @dataclass
 class NegationResult:
     """Результат проверки отрицания."""
+
     is_negated: bool
     reason: str
     matched_phrase: str | None = None
@@ -75,19 +76,23 @@ class NegationDetector:
         # (?<![а-яёa-z]) — перед фразой не должно быть буквы
         # (?![а-яёa-z])  — после фразы не должно быть буквы
         self._negation_patterns = [
-            (n, re.compile(
-                r"(?<![а-яёa-z])" + re.escape(n) + r"(?![а-яёa-z])",
-                re.IGNORECASE,
-            ))
+            (
+                n,
+                re.compile(
+                    r"(?<![а-яёa-z])" + re.escape(n) + r"(?![а-яёa-z])",
+                    re.IGNORECASE,
+                ),
+            )
             for n in self.negations
         ]
         self._soft_patterns = [
-            (s, re.compile(re.escape(s), re.IGNORECASE))
-            for s in SOFT_TRIGGERS
+            (s, re.compile(re.escape(s), re.IGNORECASE)) for s in SOFT_TRIGGERS
         ]
         self._trigger_re = (
             re.compile(
-                r"\b(" + "|".join(re.escape(t) for t in self.negation_triggers) + r")\b",
+                r"\b("
+                + "|".join(re.escape(t) for t in self.negation_triggers)
+                + r")\b",
                 re.IGNORECASE,
             )
             if self.negation_triggers
@@ -143,7 +148,7 @@ class NegationDetector:
             prefix = sentence_lower[prefix_start:pos]
             m = self._trigger_re.search(prefix)
             if m:
-                between = prefix[m.end():]
+                between = prefix[m.end() :]
                 if not re.search(r"[.,;:!?]", between):
                     return NegationResult(
                         is_negated=True,
@@ -154,12 +159,12 @@ class NegationDetector:
 
         # 5. Отрицание ПОСЛЕ синонима ("полип эндометрия не выявлен")
         suffix_end = min(len(sentence_lower), pos + len(synonym_lower) + 40)
-        suffix = sentence_lower[pos + len(synonym_lower):suffix_end]
+        suffix = sentence_lower[pos + len(synonym_lower) : suffix_end]
 
         for phrase, pattern in self._negation_patterns:
             m = pattern.search(suffix)
             if m and m.start() < 30:
-                between = suffix[:m.start()]
+                between = suffix[: m.start()]
                 if "." not in between:
                     return NegationResult(
                         is_negated=True,
@@ -184,11 +189,11 @@ class NegationDetector:
 
         if "." in between:
             return False
-        if len(between) > 60:
-            return False
-        return True
+        return len(between) <= 60
 
-    def check_batch(self, sentence: str, synonyms: list[str]) -> dict[str, NegationResult]:
+    def check_batch(
+        self, sentence: str, synonyms: list[str]
+    ) -> dict[str, NegationResult]:
         """Проверяет сразу список синонимов."""
         return {s: self.check(sentence, s) for s in synonyms}
 

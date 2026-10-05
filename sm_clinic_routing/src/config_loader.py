@@ -15,6 +15,7 @@ config_loader.py — Загрузка всех YAML-конфигов в един
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -28,22 +29,27 @@ log = logging.getLogger("config_loader")
 #                          DATACLASSES
 # ============================================================================
 
+
 @dataclass
 class Finding:
     """Одна находка из таблицы триггеров."""
+
     id: str
     synonyms: list[str]
     specialist: list[str]
     is_negative: bool
     urgency: str
     source: str
-    organ_code: str = ""           # заполняется при загрузке
-    regex: str | None = None       # только для cardio_regex
+    organ_code: str = ""  # заполняется при загрузке
+    regex: str | None = None  # только для cardio_regex
+    # Предкомпилированные regex для синонимов (для ускорения)
+    compiled_synonyms: list[tuple[str, re.Pattern]] = field(default_factory=list)
 
 
 @dataclass
 class OrganTriggers:
     """Триггеры для одного органа/направления."""
+
     organ_code: str
     organ_name: str
     keywords: list[str]
@@ -54,6 +60,7 @@ class OrganTriggers:
 @dataclass
 class SizeParam:
     """Один числовой параметр из sizes.yaml."""
+
     param: str
     normal: str
     normal_range: tuple[float | None, float | None]
@@ -68,6 +75,7 @@ class SizeParam:
 @dataclass
 class DisputeEntry:
     """Одна спорная ситуация."""
+
     situation: str
     synonyms: list[str]
     route_variants: list[str]
@@ -80,6 +88,7 @@ class DisputeEntry:
 @dataclass
 class Config:
     """Полный конфиг системы."""
+
     organs: dict[str, OrganTriggers] = field(default_factory=dict)
     sizes: dict[str, list[SizeParam]] = field(default_factory=dict)
     disputes: list[DisputeEntry] = field(default_factory=list)
@@ -96,6 +105,7 @@ class Config:
 #                          LOADER
 # ============================================================================
 
+
 class ConfigLoader:
     """Загружает все YAML-конфиги из директории."""
 
@@ -107,6 +117,63 @@ class ConfigLoader:
     # ------------------------------------------------------------------
     #  Приватные методы
     # ------------------------------------------------------------------
+
+    # ------------------------------------------------------------------
+    #  Предкомпиляция regex для синонимов
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _stem_word(word: str) -> str:
+        """Убирает падежные окончания: 'полипа' -> 'полип'."""
+        if len(word) <= 4:
+            return word
+        vowels = "аеёиоуыэюя"
+        result = word
+        while len(result) > 4 and result[-1] in vowels:
+            result = result[:-1]
+        return result
+
+    @classmethod
+    def _synonym_to_pattern(cls, synonym: str) -> str | None:
+        """Превращает синоним в regex с учётом окончаний."""
+        if not synonym or len(synonym) < 3:
+            return None
+
+        syn = synonym.lower().strip()
+        import re as _re
+
+        syn = _re.sub(r"\([^)]*\)", "", syn).strip()
+        if not syn:
+            return None
+
+        words = syn.split()
+        parts = []
+        for w in words:
+            if len(w) <= 3:
+                parts.append(_re.escape(w))
+            else:
+                stem = cls._stem_word(w)
+                parts.append(rf"{_re.escape(stem)}[а-яё]{{0,4}}")
+
+        body = r"\s+".join(parts)
+        return rf"(?<![а-яёa-z]){body}(?![а-яёa-z])"
+
+    @classmethod
+    def _compile_synonyms(cls, synonyms: list) -> list:
+        """Компилирует regex для всех синонимов."""
+        import re as _re
+
+        result = []
+        for syn in synonyms:
+            pattern_str = cls._synonym_to_pattern(syn)
+            if not pattern_str:
+                continue
+            try:
+                compiled = _re.compile(pattern_str, _re.IGNORECASE)
+                result.append((syn, compiled))
+            except _re.error:
+                continue
+        return result
 
     @staticmethod
     def _load_yaml(path: Path) -> dict[str, Any]:
@@ -142,9 +209,9 @@ class ConfigLoader:
                 keywords=keywords,
             )
 
-            # findings (синонимы + врач)
+            # findings (синонимы + врач + regex)
             for f in data.get("findings", []):
-                organ.findings.append(Finding(
+                finding = Finding(
                     id=f.get("id", ""),
                     synonyms=f.get("synonyms", []),
                     specialist=f.get("specialist", []),
@@ -152,24 +219,33 @@ class ConfigLoader:
                     urgency=f.get("urgency", "planned"),
                     source=f.get("source", ""),
                     organ_code=organ_code,
-                ))
+                    regex=f.get("regex"),
+                )
 
+                # Предкомпилируем regex для синонимов
+                finding.compiled_synonyms = self._compile_synonyms(finding.synonyms)
+
+                organ.findings.append(finding)
             # patterns (RegEx)
             for p in data.get("patterns", []):
-                organ.patterns.append(Finding(
-                    id=p.get("id", ""),
-                    synonyms=[],  # у RegEx нет синонимов
-                    specialist=p.get("specialist", []),
-                    is_negative=p.get("is_negative", False),
-                    urgency=p.get("urgency", "planned"),
-                    source=p.get("source", ""),
-                    organ_code=organ_code,
-                    regex=p.get("regex"),
-                ))
+                organ.patterns.append(
+                    Finding(
+                        id=p.get("id", ""),
+                        synonyms=[],  # у RegEx нет синонимов
+                        specialist=p.get("specialist", []),
+                        is_negative=p.get("is_negative", False),
+                        urgency=p.get("urgency", "planned"),
+                        source=p.get("source", ""),
+                        organ_code=organ_code,
+                        regex=p.get("regex"),
+                    )
+                )
 
             organs[organ_code] = organ
-            log.debug(f"  {organ_code}: {len(organ.findings)} находок, "
-                      f"{len(organ.patterns)} RegEx")
+            log.debug(
+                f"  {organ_code}: {len(organ.findings)} находок, "
+                f"{len(organ.patterns)} RegEx"
+            )
 
         log.info(f"Загружено триггеров: {len(organs)} органов")
         return organs
@@ -185,23 +261,26 @@ class ConfigLoader:
                 nr = p.get("normal_range", [None, None])
                 if not isinstance(nr, (list, tuple)):
                     nr = [None, None]
-                nr = (nr[0] if len(nr) > 0 else None,
-                      nr[1] if len(nr) > 1 else None)
+                nr = (nr[0] if len(nr) > 0 else None, nr[1] if len(nr) > 1 else None)
 
-                sizes[organ_name].append(SizeParam(
-                    param=p.get("param", ""),
-                    normal=p.get("normal", ""),
-                    normal_range=nr,
-                    trigger_text=p.get("trigger_text", ""),
-                    threshold=p.get("threshold"),
-                    unit=p.get("unit", ""),
-                    operator=p.get("operator", ">"),
-                    specialist=p.get("specialist", []),
-                    is_negative=p.get("is_negative", False),
-                ))
+                sizes[organ_name].append(
+                    SizeParam(
+                        param=p.get("param", ""),
+                        normal=p.get("normal", ""),
+                        normal_range=nr,
+                        trigger_text=p.get("trigger_text", ""),
+                        threshold=p.get("threshold"),
+                        unit=p.get("unit", ""),
+                        operator=p.get("operator", ">"),
+                        specialist=p.get("specialist", []),
+                        is_negative=p.get("is_negative", False),
+                    )
+                )
 
         total = sum(len(v) for v in sizes.values())
-        log.info(f"Загружено числовых порогов: {len(sizes)} органов, {total} параметров")
+        log.info(
+            f"Загружено числовых порогов: {len(sizes)} органов, {total} параметров"
+        )
         return sizes
 
     def _load_disputes(self) -> list[DisputeEntry]:
@@ -211,15 +290,17 @@ class ConfigLoader:
 
         for category, items in data.get("by_category", {}).items():
             for item in items:
-                entries.append(DisputeEntry(
-                    situation=item.get("situation", ""),
-                    synonyms=item.get("synonyms", []),
-                    route_variants=item.get("route_variants", []),
-                    logic=item.get("logic", ""),
-                    urgency=item.get("urgency", ""),
-                    scenario=item.get("scenario", ""),
-                    category=category,
-                ))
+                entries.append(
+                    DisputeEntry(
+                        situation=item.get("situation", ""),
+                        synonyms=item.get("synonyms", []),
+                        route_variants=item.get("route_variants", []),
+                        logic=item.get("logic", ""),
+                        urgency=item.get("urgency", ""),
+                        scenario=item.get("scenario", ""),
+                        category=category,
+                    )
+                )
 
         log.info(f"Загружено спорных ситуаций: {len(entries)}")
         return entries
@@ -273,9 +354,11 @@ class ConfigLoader:
 # ============================================================================
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO,
-                       format="%(asctime)s [%(levelname)s] %(message)s",
-                       datefmt="%H:%M:%S")
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        datefmt="%H:%M:%S",
+    )
     loader = ConfigLoader(str(Path(__file__).parent.parent / "config"))
     cfg = loader.load()
 
@@ -283,10 +366,14 @@ if __name__ == "__main__":
     print("=== ПРОВЕРКА ===")
     print(f"Органов: {len(cfg.organs)}")
     for code, organ in cfg.organs.items():
-        print(f"  {code:10s} {organ.organ_name:40s} "
-              f"findings={len(organ.findings):3d} patterns={len(organ.patterns):3d}")
-    print(f"Размеров: {len(cfg.sizes)} органов, "
-          f"{sum(len(v) for v in cfg.sizes.values())} параметров")
+        print(
+            f"  {code:10s} {organ.organ_name:40s} "
+            f"findings={len(organ.findings):3d} patterns={len(organ.patterns):3d}"
+        )
+    print(
+        f"Размеров: {len(cfg.sizes)} органов, "
+        f"{sum(len(v) for v in cfg.sizes.values())} параметров"
+    )
     print(f"Споров: {len(cfg.disputes)}")
     print(f"Отрицаний: {len(cfg.negations)}")
     print(f"Приоритетов: {list(cfg.priorities.keys())}")

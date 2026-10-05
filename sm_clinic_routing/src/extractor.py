@@ -22,20 +22,19 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
-from negations import NegationDetector, NegationResult
-from numbers import (
-    Measure,
+from measures import (
     ThresholdCheck,
     compare_with_threshold,
     find_measure_for_param,
-    parse_measures,
 )
-from preprocessor import Preprocessor, PreprocessedText
+from negations import NegationDetector
+from preprocessor import Preprocessor
 
 if TYPE_CHECKING:
-    from config_loader import Config, Finding as ConfigFinding, OrganTriggers
+    from config_loader import Config
+    from config_loader import Finding as ConfigFinding
 
 log = logging.getLogger("extractor")
 
@@ -44,9 +43,11 @@ log = logging.getLogger("extractor")
 #                        DATACLASSES
 # ============================================================================
 
+
 @dataclass
 class Finding:
     """Найденный триггер."""
+
     id: str
     organ_code: str
     matched_synonym: str
@@ -68,6 +69,7 @@ class Finding:
 @dataclass
 class ExtractionResult:
     """Результат извлечения."""
+
     findings: list[Finding] = field(default_factory=list)
     sentences_total: int = 0
     organ_codes: list[str] = field(default_factory=list)
@@ -85,6 +87,7 @@ class ExtractionResult:
 #                        EXTRACTOR
 # ============================================================================
 
+
 class Extractor:
     """
     Извлекает триггеры из текста протокола УЗИ.
@@ -94,7 +97,7 @@ class Extractor:
         result = ext.extract(protocol_text)
     """
 
-    def __init__(self, config: "Config"):
+    def __init__(self, config: Config):
         self.config = config
         self.preprocessor = Preprocessor(config)
         self.negation_detector = NegationDetector(
@@ -105,6 +108,14 @@ class Extractor:
 
     # ------------------------------------------------------------------
     #  Поиск синонимов
+    # ------------------------------------------------------------------
+
+    # ------------------------------------------------------------------
+    #  Предкомпиляция regex для синонимов
+    # ------------------------------------------------------------------
+
+    # ------------------------------------------------------------------
+    #  Предкомпиляция regex для синонимов
     # ------------------------------------------------------------------
 
     @staticmethod
@@ -120,15 +131,11 @@ class Extractor:
 
     @classmethod
     def _synonym_to_pattern(cls, synonym: str) -> str | None:
-        """
-        Превращает синоним в regex с учётом окончаний.
-        'полип эндометрия' → 'полип\\s+эндометри[а-яё]{0,4}'
-        """
+        """Превращает синоним в regex с учётом окончаний."""
         if not synonym or len(synonym) < 3:
             return None
 
         syn = synonym.lower().strip()
-        # Удаляем скобки и их содержимое
         syn = re.sub(r"\([^)]*\)", "", syn).strip()
         if not syn:
             return None
@@ -145,37 +152,88 @@ class Extractor:
         body = r"\s+".join(parts)
         return rf"(?<![а-яёa-z]){body}(?![а-яёa-z])"
 
+    @classmethod
+    def _compile_synonyms(cls, synonyms: list[str]) -> list:
+        """Компилирует regex для всех синонимов."""
+        result = []
+        for syn in synonyms:
+            pattern_str = cls._synonym_to_pattern(syn)
+            if not pattern_str:
+                continue
+            try:
+                compiled = re.compile(pattern_str, re.IGNORECASE)
+                result.append((syn, compiled))
+            except re.error:
+                continue
+        return result
+
+    # --- Методы ---
     # Синонимы, которых не должно быть в УЗИ-протоколах
-    SKIP_SYNONYM_MARKERS = ["(морфология)", "морфология", "гистология"]
+    SKIP_SYNONYM_MARKERS: ClassVar[list[str]] = [
+        "(морфология)",
+        "морфология",
+        "гистология",
+    ]
 
     def _find_synonym_matches(
         self,
         sentence: str,
-        finding: "ConfigFinding",
+        finding: ConfigFinding,
     ) -> list[tuple[str, str]]:
-        """..."""
+        """
+        Ищет совпадения в предложении:
+          1. По синонимам (со стеммингом)
+          2. По regex (если у finding есть поле regex)
+        """
         if not sentence:
             return []
 
         sentence_lower = sentence.lower()
         matches: list[tuple[str, str]] = []
+        seen_spans: list[tuple[int, int]] = []
 
-        for syn in finding.synonyms:
-            # Пропускаем морфологические синонимы — они не для УЗИ
-            if any(marker in syn.lower() for marker in self.SKIP_SYNONYM_MARKERS):
-                continue
-
-            pattern = self._synonym_to_pattern(syn)
-            if not pattern:
-                continue
-            try:
-                for m in re.finditer(pattern, sentence_lower):
+        # 1. Синонимы — используем предкомпилированные regex (ускорение 10×)
+        compiled = getattr(finding, "compiled_synonyms", None)
+        if compiled:
+            for syn, pattern in compiled:
+                if any(marker in syn.lower() for marker in self.SKIP_SYNONYM_MARKERS):
+                    continue
+                m = pattern.search(sentence_lower)
+                if m:
                     matches.append((syn, m.group(0)))
-                    break  # одна находка на синоним в предложении
+                    seen_spans.append((m.start(), m.end()))
+        else:
+            # Fallback: если конфиг старый (не предкомпилирован)
+            for syn in finding.synonyms:
+                if any(marker in syn.lower() for marker in self.SKIP_SYNONYM_MARKERS):
+                    continue
+                pattern = self._synonym_to_pattern(syn)
+                if not pattern:
+                    continue
+                try:
+                    for m in re.finditer(pattern, sentence_lower):
+                        matches.append((syn, m.group(0)))
+                        seen_spans.append((m.start(), m.end()))
+                        break
+                except re.error as e:
+                    log.warning(f"Ошибка regex для '{syn}': {e}")
+
+        # 2. RegEx-паттерн (если есть)
+        if finding.regex:
+            try:
+                for m in re.finditer(finding.regex, sentence, re.IGNORECASE):
+                    # Пропускаем, если перекрывается с уже найденным синонимом
+                    overlap = any(
+                        not (m.end() <= s or m.start() >= e) for s, e in seen_spans
+                    )
+                    if not overlap:
+                        matches.append((finding.source, m.group(0)))
+                    break
             except re.error as e:
-                log.warning(f"Ошибка regex для '{syn}': {e}")
+                log.warning(f"Ошибка regex {finding.regex!r}: {e}")
 
         return matches
+
     # ------------------------------------------------------------------
     #  Извлечение цитаты
     # ------------------------------------------------------------------
@@ -203,7 +261,7 @@ class Extractor:
 
     def _process_finding(
         self,
-        finding: "ConfigFinding",
+        finding: ConfigFinding,
         sentence: str,
         matched_synonym: str,
         matched_text: str,
@@ -266,7 +324,7 @@ class Extractor:
     def _check_size_rules(
         self,
         sentence: str,
-        finding: "ConfigFinding",
+        finding: ConfigFinding,
     ) -> ThresholdCheck | None:
         """
         Проверяет размеры в предложении против sizes.yaml.
@@ -277,13 +335,14 @@ class Extractor:
         sentence_lower = sentence.lower()
 
         # Ищем подходящий параметр в sizes по ключевым словам
-        for organ_name, params in self.config.sizes.items():
+        for params in self.config.sizes.values():
             for param in params:
                 # Ключевые слова параметра: из param.param
                 param_kw = param.param.lower()
                 # Отрезаем общие слова вроде "Размер"
                 tokens = [
-                    t for t in re.split(r"\s+", param_kw)
+                    t
+                    for t in re.split(r"\s+", param_kw)
                     if len(t) > 3 and t not in ("размер", "общий", "объем")
                 ]
                 if not tokens:
@@ -313,40 +372,6 @@ class Extractor:
     #  RegEx-паттерны (кардио)
     # ------------------------------------------------------------------
 
-    def _extract_regex_patterns(
-        self,
-        sentence: str,
-    ) -> list[Finding]:
-        """Применяет RegEx-паттерны из cardio_regex.yaml."""
-        findings: list[Finding] = []
-        cardio_re = self.config.organs.get("cardio_regex")
-        if not cardio_re:
-            return findings
-
-        for pattern_finding in cardio_re.patterns:
-            if not pattern_finding.regex:
-                continue
-            try:
-                for m in re.finditer(pattern_finding.regex, sentence, re.IGNORECASE):
-                    matched = m.group(0)
-                    quote = self._extract_quote(sentence, matched)
-                    findings.append(Finding(
-                        id=pattern_finding.id,
-                        organ_code="cardio_regex",
-                        matched_synonym=pattern_finding.source,
-                        specialist=list(pattern_finding.specialist),
-                        urgency=pattern_finding.urgency,
-                        sentence=sentence,
-                        quote=quote,
-                        negated=False,
-                        confidence=0.85,
-                    ))
-                    break  # одна находка на паттерн
-            except re.error as e:
-                log.warning(f"Ошибка regex {pattern_finding.regex!r}: {e}")
-
-        return findings
-
     # ------------------------------------------------------------------
     #  Главный метод
     # ------------------------------------------------------------------
@@ -367,17 +392,22 @@ class Extractor:
 
         # 1. Предобработка
         pre = self.preprocessor.process(text)
-        log.info(f"Предложений: {len(pre.sentences)}, "
-                 f"органы: {pre.organ_codes}")
+        log.info(f"Предложений: {len(pre.sentences)}, " f"органы: {pre.organ_codes}")
 
+        # Временный result, органы заполним после обработки
         result = ExtractionResult(
             sentences_total=len(pre.sentences),
-            organ_codes=list(pre.organ_codes),
+            organ_codes=[],  # заполним позже
             primary_organ=pre.primary_organ,
         )
 
-        # Если не удалось определить орган — пробуем по всем
-        organ_codes_to_check = pre.organ_codes or list(self.config.organs.keys())
+        # Используем только первичный орган (или тот, что доминирует по скору)
+        if pre.organ_codes:
+            # Берём только первый (самый вероятный) орган
+            organ_codes_to_check = [pre.organ_codes[0]]
+        else:
+            # Если ничего не нашли — идём по всем
+            organ_codes_to_check = list(self.config.organs.keys())
 
         # 2. Обрабатываем предложения
         for sentence in pre.sentences:
@@ -395,15 +425,24 @@ class Extractor:
                         if f:
                             result.findings.append(f)
 
-            # 2.2. RegEx-паттерны (кардио)
-            regex_findings = self._extract_regex_patterns(sentence)
-            result.findings.extend(regex_findings)
-
-        # 3. Убираем дубли: один и тот же finding.id + то же предложение
+        # 3. Убираем дубли
         result.findings = self._deduplicate(result.findings)
 
-        log.info(f"Найдено находок: {len(result.findings)} "
-                 f"(из них негативных: {len(result.negative())})")
+        # 4. Определяем реальные органы: те, чьи находки попали в результат
+        #    Исключаем отрицательные находки — они не формируют маршрут
+        real_organs = sorted(
+            {f.organ_code for f in result.findings if f.organ_code and not f.negated}
+        )
+        if not real_organs:
+            # Если позитивных нет — оставляем органы из препроцессора
+            real_organs = list(pre.organ_codes)
+        result.organ_codes = real_organs
+
+        log.info(
+            f"Найдено находок: {len(result.findings)} "
+            f"(из них негативных: {len(result.negative())}), "
+            f"органы: {result.organ_codes}"
+        )
 
         return result
 
@@ -446,6 +485,7 @@ if __name__ == "__main__":
 
     import sys
     from pathlib import Path
+
     sys.path.insert(0, str(Path(__file__).parent))
 
     from config_loader import ConfigLoader
@@ -506,6 +546,20 @@ if __name__ == "__main__":
             BI-RADS 3.
             ЗАКЛЮЧЕНИЕ: Фиброаденома правой молочной железы.
         """,
+        "Кардио (ГЛЖ + ФВ 45%)": """
+            Эхокардиография.
+            Левый желудочек: гипертрофия стенок, МЖП 14 мм.
+            Фракция выброса 45%, снижена.
+            Диастолическая дисфункция 1 типа.
+            Легочная гипертензия, СДЛА 42 мм рт.ст.
+            ЗАКЛЮЧЕНИЕ: ГЛЖ, снижение ФВ, диастолическая дисфункция.
+        """,
+        "Кардио (норма)": """
+            Эхокардиография.
+            Фракция выброса в норме, 62%.
+            Камеры сердца не расширены.
+            ЗАКЛЮЧЕНИЕ: Показатели в пределах возрастной нормы.
+        """,
     }
 
     for label, protocol in tests.items():
@@ -514,8 +568,10 @@ if __name__ == "__main__":
         print("=" * 70)
         result = ext.extract(protocol)
         print(f"Органы: {result.organ_codes}")
-        print(f"Найдено: {len(result.findings)} (позитивных: "
-              f"{len(result.positive())}, отрицательных: {len(result.negative())})")
+        print(
+            f"Найдено: {len(result.findings)} (позитивных: "
+            f"{len(result.positive())}, отрицательных: {len(result.negative())})"
+        )
         print()
         for f in result.findings:
             status = "❌ ОТРИЦ" if f.negated else "✅ НАЙДЕНО"
@@ -526,8 +582,10 @@ if __name__ == "__main__":
             print(f"           синоним: {f.matched_synonym}")
             print(f"           цитата: {f.quote[:80]}")
             if f.size_check:
-                print(f"           размер: triggered={f.size_check.triggered}, "
-                      f"{f.size_check.reason}")
+                print(
+                    f"           размер: triggered={f.size_check.triggered}, "
+                    f"{f.size_check.reason}"
+                )
             if f.negated:
                 print(f"           причина: {f.negated_reason}")
             print()

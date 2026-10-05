@@ -22,7 +22,7 @@ import re
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from extractor import Finding, ExtractionResult
+from extractor import ExtractionResult, Finding
 
 if TYPE_CHECKING:
     from config_loader import Config, DisputeEntry
@@ -34,27 +34,30 @@ log = logging.getLogger("router")
 #                        DATACLASS
 # ============================================================================
 
+
 @dataclass
 class Route:
     """Финальный маршрут пациента."""
-    status: str = "pending"                  # pending / no_action / assigned
-    specialist: list[str] = field(default_factory=list)
-    urgency: str = "planned"                 # emergency / oncological / urgent / planned / observation
-    deadline_days: int = 14
-    scenario: str = "стандартный"            # стандартный / мягкий_сценарий / срочный_контакт
 
-    basis: str = ""                          # "УЗИ ОМТ от 26.08.2026"
-    recommendation: str = ""                 # "консультация гинеколога"
-    finding_summary: str = ""                # "полип эндометрия 12 мм"
+    status: str = "pending"  # pending / no_action / assigned
+    specialist: list[str] = field(default_factory=list)
+    urgency: str = "planned"  # emergency / oncological / urgent / planned / observation
+    deadline_days: int = 14
+    scenario: str = "стандартный"  # стандартный / мягкий_сценарий / срочный_контакт
+
+    basis: str = ""  # "УЗИ ОМТ от 26.08.2026"
+    recommendation: str = ""  # "консультация гинеколога"
+    finding_summary: str = ""  # "полип эндометрия 12 мм"
 
     primary_finding: Finding | None = None
     all_findings: list[Finding] = field(default_factory=list)
 
-    reason: str = ""                         # объяснение выбора
-    quote: str = ""                          # цитата из протокола
+    reason: str = ""  # объяснение выбора
+    quote: str = ""  # цитата из протокола
 
-    multidisciplinary: bool = False          # True если >1 специалиста
-    dispute_applied: str = ""                # если применили спорную ситуацию
+    multidisciplinary: bool = False  # True если >1 специалиста
+    dispute_applied: str | None = None
+    status_label: str = "ожидает решения врача"  # если применили спорную ситуацию
 
     def is_empty(self) -> bool:
         return self.status == "no_action"
@@ -69,6 +72,7 @@ class Route:
 #                        ROUTER
 # ============================================================================
 
+
 class Router:
     """
     Строит маршрут пациента из списка findings.
@@ -78,7 +82,7 @@ class Router:
         route = rt.build(extraction_result)
     """
 
-    def __init__(self, config: "Config"):
+    def __init__(self, config: Config):
         self.config = config
         log.debug("Router инициализирован")
 
@@ -112,37 +116,46 @@ class Router:
     #  Спорные ситуации
     # ------------------------------------------------------------------
 
-    def _find_dispute(self, finding: Finding) -> "DisputeEntry | None":
+    def _find_dispute(self, finding: Finding) -> DisputeEntry | None:
         """
-        Ищет спорную ситуацию, подходящую под finding.
-
-        Сопоставляет по синонимам и органу. Если найдена — возвращает DisputeEntry.
+        Ищет спорную ситуацию по finding.
+        Требует точного совпадения (по границам слов) или минимальной длины.
         """
         if not self.config.disputes:
             return None
 
-        matched_syn = (finding.matched_synonym or "").lower()
-        if not matched_syn:
+        matched_syn = (finding.matched_synonym or "").lower().strip()
+
+        # Слишком короткий синоним ("узел", "киста") — пропускаем,
+        # чтобы не ловить ложные срабатывания
+        if not matched_syn or len(matched_syn) < 5:
             return None
 
-        best: "DisputeEntry | None" = None
+        best: DisputeEntry | None = None
         best_len = 0
 
         for dispute in self.config.disputes:
             for syn in dispute.synonyms:
-                syn_low = syn.lower()
-                # Ищем точное вхождение или вхождение синонима из dispute в matched
-                if syn_low in matched_syn or matched_syn in syn_low:
-                    # Чем длиннее совпадение — тем точнее
-                    if len(syn_low) > best_len:
-                        best = dispute
-                        best_len = len(syn_low)
+                syn_low = syn.lower().strip()
+                if not syn_low:
+                    continue
+
+                # 1. Совпадение по границам слов (не подстроку!)
+                # 2. ИЛИ matched_syn целиком входит в syn_low
+                pattern = r"(?<![а-яёa-z])" + re.escape(syn_low) + r"(?![а-яёa-z])"
+                is_match = re.search(pattern, matched_syn) or (
+                    syn_low in matched_syn and len(matched_syn) >= 5
+                )
+                if is_match and len(syn_low) > best_len:
+                    best = dispute
+                    best_len = len(syn_low)
+
         return best
 
     def _apply_dispute(
         self,
         route: Route,
-        dispute: "DisputeEntry",
+        dispute: DisputeEntry,
         base_urgency: str,
     ) -> None:
         """Применяет спорную ситуацию к маршруту."""
@@ -175,7 +188,8 @@ class Router:
             if new_prio > cur_prio:
                 route.urgency = dispute_urgency
                 route.deadline_days = self.config.urgency_deadlines.get(
-                    dispute_urgency, route.deadline_days,
+                    dispute_urgency,
+                    route.deadline_days,
                 )
 
         # Мультидисциплинарный?
@@ -212,10 +226,13 @@ class Router:
 
         # 1. Только позитивные находки
         positives = extraction.positive()
-        log.info(f"Позитивных находок: {len(positives)} "
-                 f"(отрицательных: {len(extraction.negative())})")
+        log.info(
+            f"Позитивных находок: {len(positives)} "
+            f"(отрицательных: {len(extraction.negative())})"
+        )
 
         # 2. Если ничего нет — no_action
+        # 2. Если ничего нет — no action
         if not positives:
             log.info("Находок нет — маршрут не требуется")
             return Route(
@@ -225,13 +242,28 @@ class Router:
                 all_findings=extraction.findings,
             )
 
+        # 2б. Отсеиваем находки без специалиста (это нормы/наблюдения)
+        actionable = [f for f in positives if f.specialist]
+        if not actionable:
+            log.info("Все находки — без специалиста — маршрут не требуется")
+            return Route(
+                status="no_action",
+                reason="Значимых находок не выявлено",
+                basis=f"{study_type} от {study_date}".strip(),
+                all_findings=extraction.findings,
+            )
+
+        positives = actionable
+
         # 3. Сортировка по приоритету
         sorted_findings = self._sort_findings(positives)
         primary = sorted_findings[0]
 
-        log.info(f"Приоритетная находка: {primary.id} "
-                 f"(специалист: {primary.specialist}, "
-                 f"urgency: {primary.urgency})")
+        log.info(
+            f"Приоритетная находка: {primary.id} "
+            f"(специалист: {primary.specialist}, "
+            f"urgency: {primary.urgency})"
+        )
 
         # 4. Базовый маршрут
         route = Route(
@@ -260,13 +292,19 @@ class Router:
             log.info(f"Применена спорная ситуация: {dispute.situation}")
             self._apply_dispute(route, dispute, primary.urgency)
 
-        # 7. Объединяем специалистов из ВСЕХ позитивных findings
-        #    (если у них та же urgency или выше)
+            # 7. Объединяем специалистов ТОЛЬКО из finding'ов того же органа,
+        #    что и primary (чтобы не подмешивать случайные совпадения)
         all_specialists = set(route.specialist)
+        primary_organ = getattr(primary, "organ_code", "") or ""
+
         for f in sorted_findings[1:]:
+            # Только тот же орган
+            f_organ = getattr(f, "organ_code", "") or ""
+            if primary_organ and f_organ != primary_organ:
+                continue
+
             f_prio = self._priority_of(f)
             route_prio = self.config.priorities.get(route.urgency, 40)
-            # Добавляем специалистов только если их priority не ниже основного
             if f_prio >= route_prio - 20:
                 all_specialists.update(f.specialist)
 
@@ -278,16 +316,33 @@ class Router:
         # 8. Уточняем urgency, если среди находок есть более срочная
         for f in sorted_findings:
             f_urgency = f.urgency or "planned"
-            if self.config.priorities.get(f_urgency, 0) > self.config.priorities.get(route.urgency, 0):
+            if self.config.priorities.get(f_urgency, 0) > self.config.priorities.get(
+                route.urgency, 0
+            ):
                 route.urgency = f_urgency
-                route.deadline_days = self.config.urgency_deadlines.get(f_urgency, route.deadline_days)
-                route.scenario = self.config.urgency_scenarios.get(f_urgency, route.scenario)
+                route.deadline_days = self.config.urgency_deadlines.get(
+                    f_urgency, route.deadline_days
+                )
+                route.scenario = self.config.urgency_scenarios.get(
+                    f_urgency, route.scenario
+                )
 
         # 9. Финальная проверка мультидисциплинарности
         if len(route.specialist) > 1 and route.scenario == "стандартный":
             route.scenario = "мультидисциплинарный"
+            # Финальная метка статуса для UI
+        if route.urgency == "emergency":
+            route.status_label = "🚨 Требуется срочный контакт"
+        elif route.urgency == "oncological":
+            route.status_label = "⚠️ Онконастороженность"
+        elif route.urgency == "urgent":
+            route.status_label = "⏰ Требуется ускоренное решение"
+        elif route.multidisciplinary:
+            route.status_label = "👥 Мультидисциплинарный консилиум"
+        else:
+            route.status_label = "📅 Ожидает решения врача"
 
-        log.info(f"Маршрут: {route}")
+        log.info(f"Маршрут: {route} | {route.status_label}")
         return route
 
     # ------------------------------------------------------------------
@@ -325,6 +380,7 @@ if __name__ == "__main__":
 
     import sys
     from pathlib import Path
+
     sys.path.insert(0, str(Path(__file__).parent))
 
     from config_loader import ConfigLoader
@@ -408,6 +464,18 @@ if __name__ == "__main__":
             ЗАКЛЮЧЕНИЕ: Стенозирующий атеросклероз.
             """,
         ),
+        (
+            "Кардио (ГЛЖ + ФВ 45%)",
+            "ЭхоКГ от 26.08.2026",
+            """
+            Эхокардиография.
+            Левый желудочек: гипертрофия стенок, МЖП 14 мм.
+            Фракция выброса 45%, снижена.
+            Диастолическая дисфункция 1 типа.
+            Легочная гипертензия, СДЛА 42 мм рт.ст.
+            ЗАКЛЮЧЕНИЕ: ГЛЖ, снижение ФВ, диастолическая дисфункция.
+            """,
+        ),
     ]
 
     for label, study_type, protocol in tests:
@@ -418,7 +486,7 @@ if __name__ == "__main__":
         extraction = ext.extract(protocol)
         route = rt.build(extraction, study_type=study_type, study_date="")
 
-        print(f"\n→ РЕЗУЛЬТАТ:")
+        print("\n→ РЕЗУЛЬТАТ:")
         print(f"   status:           {route.status}")
         print(f"   specialist:       {route.specialist}")
         print(f"   urgency:          {route.urgency}")
