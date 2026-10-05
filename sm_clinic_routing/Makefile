@@ -108,11 +108,9 @@ help:
 setup:
 	@echo "$(BLUE)🔧 Создаю venv...$(NC)"
 	@$(PYTHON) -m venv $(VENV)
-	@echo "$(BLUE)📦 Устанавливаю зависимости...$(NC)"
+	@echo "$(BLUE)📦 Устанавливаю зависимости (requirements.txt)...$(NC)"
 	@$(PIP) install --upgrade pip --quiet
-	@$(PIP) install --quiet \
-		pandas openpyxl PyYAML jinja2 pytest \
-		python-docx black ruff pytest-cov
+	@$(PIP) install --quiet -r requirements.txt
 	@echo "$(GREEN)✅ Готово! Активируйте: source $(VENV)/bin/activate$(NC)"
 
 .PHONY: install

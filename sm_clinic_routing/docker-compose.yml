@@ -1,0 +1,30 @@
+# ============================================================
+# ArtKnit — docker compose
+#
+# Работает на Linux и Windows (Docker Desktop / WSL2).
+#
+#   docker compose up                             — веб-сервер http://localhost:8000
+#   docker compose run --rm artknit make all      — полный цикл (make all)
+#   docker compose run --rm artknit make demo     — демо-генерация HTML
+#   docker compose run --rm artknit make test     — unit-тесты
+#   docker compose down                           — остановить
+#
+# Порт можно поменять:  ARTKNIT_PORT=8080 docker compose up
+# ============================================================
+services:
+  artknit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: artknit:latest
+    container_name: artknit
+    working_dir: /app
+    ports:
+      - "${ARTKNIT_PORT:-8000}:8000"
+    volumes:
+      # Результаты генерации (HTML, метрики, журнал аудита) сохраняются на хосте
+      - ./output:/app/output
+    environment:
+      PYTHONUNBUFFERED: "1"
+      DJANGO_SETTINGS_MODULE: "web.settings"
+    restart: unless-stopped

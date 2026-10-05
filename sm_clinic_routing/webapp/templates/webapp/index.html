@@ -1,0 +1,403 @@
+{% load webapp_extras %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArtKnit — Маршрутизация протоколов УЗИ</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #F6F8F7; color: #1F2937; font-size: 14px; line-height: 1.45;
+  }
+  .app { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 240px; background: #FFFFFF;
+    border-right: 1px solid #E5E7EB;
+    padding: 20px 16px;
+    display: flex; flex-direction: column; gap: 24px;
+    position: sticky; top: 0; height: 100vh; flex-shrink: 0;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon {
+    width: 40px; height: 40px; background: #13AB7B;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 20px;
+  }
+  .logo-text h1 { font-size: 16px; font-weight: 700; }
+  .logo-text p { font-size: 12px; color: #6B7280; }
+  .section-title {
+    font-size: 11px; font-weight: 600; color: #9CA3AF;
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;
+  }
+  .nav { display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 8px;
+    color: #374151; font-size: 14px; cursor: pointer;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: #F3F4F6; }
+  .nav-item.active { background: #E8F5EE; color: #13AB7B; font-weight: 600; }
+  .nav-item .ico { width: 18px; text-align: center; }
+  .main { flex: 1; padding: 20px 28px 40px; min-width: 0; }
+  .topbar { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+  .page-title h1 { font-size: 22px; font-weight: 700; }
+  .page-title p { font-size: 13px; color: #6B7280; margin-top: 2px; }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .user {
+    display: flex; align-items: center; gap: 8px;
+    background: #FFFFFF; border: 1px solid #E5E7EB;
+    border-radius: 20px; padding: 6px 14px 6px 6px; white-space: nowrap;
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #13AB7B; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 13px;
+  }
+  .alert {
+    display: flex; align-items: center; gap: 10px;
+    background: #FDECEA; border: 1px solid #F5C6C2;
+    color: #B3261E; border-radius: 12px;
+    padding: 12px 16px; margin-bottom: 20px; font-weight: 600;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: 20px; align-items: start;
+  }
+  .card {
+    background: #FFFFFF; border: 1px solid #E5E7EB;
+    border-radius: 16px; padding: 20px;
+  }
+  .card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; gap: 10px; flex-wrap: wrap;
+  }
+  .card-head h3 { font-size: 16px; font-weight: 700; }
+  .card-head .sub { font-size: 12px; color: #9CA3AF; }
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field.full { grid-column: 1 / -1; }
+  .field label { font-size: 12px; font-weight: 600; color: #374151; }
+  .field input, .field select, .field textarea {
+    border: 1px solid #E5E7EB; border-radius: 10px;
+    padding: 10px 12px; font-size: 14px; font-family: inherit;
+    color: #1F2937; background: #FFFFFF; outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: #13AB7B; box-shadow: 0 0 0 3px rgba(19, 171, 123, 0.12);
+  }
+  .field textarea { resize: vertical; min-height: 280px; line-height: 1.55; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
+  .btn-primary {
+    background: #13AB7B; color: #fff; border: none;
+    border-radius: 20px; padding: 12px 24px;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: background .15s;
+  }
+  .btn-primary:hover { background: #0F9668; }
+  .btn-secondary {
+    background: #FFFFFF; color: #374151; border: 1px solid #E5E7EB;
+    border-radius: 20px; padding: 12px 24px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
+    text-decoration: none; transition: background .15s;
+  }
+  .btn-secondary:hover { background: #F3F4F6; }
+  .actions { display: flex; align-items: center; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .demo-list { display: flex; flex-direction: column; gap: 8px; }
+  .demo-chip {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border: 1px solid #E5E7EB;
+    border-radius: 12px; background: #FAFBFC;
+    cursor: pointer; transition: all .15s;
+    text-align: left; width: 100%; font-family: inherit;
+  }
+  .demo-chip:hover { border-color: #13AB7B; background: #E8F5EE; }
+  .demo-chip .d-icon {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: #E8F5EE; color: #13AB7B;
+    display: grid; place-items: center; font-size: 15px; flex-shrink: 0;
+  }
+  .demo-chip .d-body { flex: 1; min-width: 0; }
+  .demo-chip .d-t { font-size: 13px; font-weight: 700; color: #1F2937; }
+  .demo-chip .d-s { font-size: 11.5px; color: #6B7280; margin-top: 2px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 700;
+  }
+  .badge.green { background: #E8F5EE; color: #13AB7B; }
+  .badge.orange { background: #FFF4E6; color: #FE8B4B; }
+  .badge.red { background: #FDECEA; color: #E53935; }
+  .badge.blue { background: #EAF1FE; color: #2563EB; }
+  .badge.gray { background: #F3F4F6; color: #6B7280; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    text-align: left; padding: 10px 12px;
+    color: #6B7280; font-size: 11.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    border-bottom: 1px solid #E5E7EB; white-space: nowrap;
+  }
+  tbody td {
+    padding: 12px; border-bottom: 1px solid #F3F4F6; color: #1F2937;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #FAFBFC; }
+  .empty { color: #9CA3AF; font-size: 13px; padding: 16px 0; }
+  @media (max-width: 1100px) {
+    .grid { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">♥</div>
+      <div class="logo-text">
+        <h1>ArtKnit</h1>
+        <p>Кардиоцентр</p>
+      </div>
+    </div>
+    <div>
+      <div class="section-title">Рабочее пространство</div>
+      <nav class="nav">
+        <a href="/" class="nav-item active"><span class="ico">🏠</span> Главная</a>
+        <a href="/dashboard/" class="nav-item"><span class="ico">📊</span> Аналитика</a>
+      </nav>
+    </div>
+    <div>
+      <div class="section-title">Управление</div>
+      <nav class="nav">
+        <a href="#" class="nav-item" data-stub="Уведомления"><span class="ico">🔔</span> Уведомления</a>
+        <a href="#" class="nav-item" data-stub="Настройки"><span class="ico">⚙️</span> Настройки</a>
+      </nav>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="page-title">
+        <h1>Маршрутизация протоколов УЗИ</h1>
+        <p>Вставьте текст протокола — система определит специалиста и срочность маршрута</p>
+      </div>
+      <div class="topbar-right">
+        <div class="user">
+          <div class="avatar">ВР</div>
+          <span>Врач УЗИ ▾</span>
+        </div>
+      </div>
+    </div>
+
+    {% if error_message %}
+    <div class="alert">⚠️ {{ error_message }}</div>
+    {% endif %}
+
+    <div class="grid">
+
+      <!-- Форма ввода -->
+      <div class="card">
+        <div class="card-head">
+          <h3>📝 Протокол исследования</h3>
+          <span class="sub">поля «Пациент» и «Врач» можно оставить по умолчанию</span>
+        </div>
+        <form method="post" action="/process/">
+          {% csrf_token %}
+          <div class="form-grid">
+            <div class="field full">
+              <label for="protocol">Текст протокола *</label>
+              <textarea id="protocol" name="protocol" required
+                        placeholder="Вставьте сюда заключение УЗИ… например:&#10;УЛЬТРАЗВУКОВОЕ ИССЛЕДОВАНИЕ ОРГАНОВ МАЛОГО ТАЗА&#10;М-ЭХО — 14.0 мм, неоднородной эхоструктуры.&#10;В полости матки лоцируется гиперэхогенное образование 12 мм — полип эндометрия."></textarea>
+            </div>
+            <div class="field">
+              <label for="study_type">Тип исследования</label>
+              <input id="study_type" name="study_type" list="study-types" value="УЗИ">
+              <datalist id="study-types">
+                <option value="УЗИ">
+                <option value="УЗИ ОМТ">
+                <option value="УЗИ органов брюшной полости">
+                <option value="УЗИ молочных желез">
+                <option value="УЗИ предстательной железы">
+                <option value="УЗИ артерий нижних конечностей">
+                <option value="УЗИ щитовидной железы">
+                <option value="Эхокардиография">
+              </datalist>
+            </div>
+            <div class="field">
+              <label for="study_date">Дата исследования</label>
+              <input id="study_date" name="study_date" type="date">
+            </div>
+            <div class="field">
+              <label for="patient_name">Пациент</label>
+              <input id="patient_name" name="patient_name" placeholder="Иванова Анна Сергеевна">
+            </div>
+            <div class="field">
+              <label for="patient_age">Возраст</label>
+              <input id="patient_age" name="patient_age" type="number" min="0" max="120" placeholder="30">
+            </div>
+            <div class="field">
+              <label for="patient_initials">Инициалы пациента</label>
+              <input id="patient_initials" name="patient_initials" placeholder="ИА">
+            </div>
+            <div class="field">
+              <label for="sex_label">Пол</label>
+              <select id="sex_label" name="sex_label">
+                <option value="">—</option>
+                <option value="женский">женский</option>
+                <option value="мужской">мужской</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="card_id">№ карты</label>
+              <input id="card_id" name="card_id" placeholder="web-…">
+            </div>
+            <div class="field">
+              <label for="doctor_name">Врач</label>
+              <input id="doctor_name" name="doctor_name" placeholder="Кузнецова А.В.">
+            </div>
+            <div class="field">
+              <label for="doctor_initials">Инициалы врача</label>
+              <input id="doctor_initials" name="doctor_initials" placeholder="АК">
+            </div>
+            <div class="field">
+              <label for="visit_date">Дата визита</label>
+              <input id="visit_date" name="visit_date" type="date">
+            </div>
+            <div class="field">
+              <label for="visit_time">Время визита</label>
+              <input id="visit_time" name="visit_time" type="time">
+            </div>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn-primary">🧭 Построить маршрут</button>
+            <button type="button" class="btn-secondary" id="btn-clear">Очистить</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Демо-протоколы -->
+      <div class="card">
+        <div class="card-head">
+          <h3>🎯 Демо-протоколы</h3>
+          <span class="sub">клик — подставить в форму</span>
+        </div>
+        <div class="demo-list">
+          {% for d in demo %}
+          <button type="button" class="demo-chip" data-demo="{{ forloop.counter0 }}">
+            <div class="d-icon">🩺</div>
+            <div class="d-body">
+              <div class="d-t">{{ d.label }}</div>
+              <div class="d-s">{{ d.study_type }} · {{ d.patient_name }}</div>
+            </div>
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Журнал аудита -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <div class="card-head">
+          <h3>🕘 Последние маршруты</h3>
+          <span class="sub">журнал аудита output/routes_audit.jsonl</span>
+          <a href="/dashboard/" class="btn-secondary" style="padding: 6px 16px; font-size: 12.5px;">Вся аналитика →</a>
+        </div>
+        {% if audit %}
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Пациент</th>
+                <th>Находка</th>
+                <th>Специалист</th>
+                <th>Срочность</th>
+                <th>Статус</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in audit %}
+              <tr>
+                <td>
+                  <strong>{{ r.patient_name }}</strong>
+                  <div style="font-size: 11.5px; color: #9CA3AF;">№{{ r.patient_id }} · {{ r.patient_age }} лет</div>
+                </td>
+                <td>{{ r.finding|default:"—" }}</td>
+                <td>{{ r.specialist|join:", "|default:"—" }}</td>
+                <td>
+                  {% with m=urgent_meta|get_item:r.urgency %}
+                  <span class="badge {{ m.css }}">{{ m.label }}</span>
+                  {% endwith %}
+                </td>
+                <td><span class="badge blue">{{ r.status_label }}</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="empty">Журнал аудита пуст — обработайте первый протокол.</div>
+        {% endif %}
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  // Демо-протоколы, переданные из views.index (mark_safe JSON)
+  const DEMO = {{ demo_json }};
+
+  function setField(id, value) {
+    const el = document.getElementById(id);
+    if (el && value !== undefined && value !== null) { el.value = value; }
+  }
+
+  // Клик по демо-чипу — заполнить форму
+  document.querySelectorAll('.demo-chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      const item = DEMO[parseInt(chip.dataset.demo, 10)];
+      if (!item) { return; }
+      setField('protocol', item.protocol);
+      setField('study_type', item.study_type);
+      setField('study_date', item.study_date);
+      setField('patient_name', item.patient_name);
+      setField('patient_initials', item.patient_initials);
+      setField('patient_age', item.patient_age);
+      setField('sex_label', item.sex_label);
+      setField('card_id', item.card_id);
+      setField('doctor_name', item.doctor_name);
+      setField('doctor_initials', item.doctor_initials);
+      document.getElementById('protocol').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.getElementById('protocol').focus();
+    });
+  });
+
+  document.getElementById('btn-clear').addEventListener('click', function () {
+    document.querySelectorAll('#protocol, #study_type, #study_date, #patient_name, #patient_age, #patient_initials, #sex_label, #card_id, #doctor_name, #doctor_initials, #visit_date, #visit_time')
+      .forEach(function (el) { el.value = ''; });
+    document.getElementById('study_type').value = 'УЗИ';
+  });
+
+  // Заглушки для нереализованных ссылок
+  document.querySelectorAll('[data-stub]').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      alert('Функция доступна в полной версии МИС.');
+    });
+  });
+</script>
+
+</body>
+</html>

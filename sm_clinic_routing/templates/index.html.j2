@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArtKnit — Список пациентов</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #F6F8F7; color: #1F2937; font-size: 14px; line-height: 1.45;
+  }
+  .app { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 240px; background: #FFFFFF;
+    border-right: 1px solid #E5E7EB;
+    padding: 20px 16px;
+    display: flex; flex-direction: column; gap: 24px;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon {
+    width: 40px; height: 40px; background: #13AB7B;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 20px;
+  }
+  .logo-text h1 { font-size: 16px; font-weight: 700; }
+  .logo-text p { font-size: 12px; color: #6B7280; }
+  .section-title {
+    font-size: 11px; font-weight: 600; color: #9CA3AF;
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;
+  }
+  .nav { display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 8px;
+    color: #374151; font-size: 14px; cursor: pointer;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: #F3F4F6; }
+  .nav-item.active { background: #E8F5EE; color: #13AB7B; font-weight: 600; }
+  .nav-item .ico { width: 18px; text-align: center; }
+  .main { flex: 1; padding: 20px 28px 40px; }
+  .topbar { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+  .page-title h1 { font-size: 22px; font-weight: 700; }
+  .page-title p { font-size: 13px; color: #6B7280; margin-top: 2px; }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .user {
+    display: flex; align-items: center; gap: 8px;
+    background: #FFFFFF; border: 1px solid #E5E7EB;
+    border-radius: 20px; padding: 6px 14px 6px 6px;
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #13AB7B; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 13px;
+  }
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 24px;
+  }
+  .stat {
+    background: #FFFFFF; border: 1px solid #E5E7EB;
+    border-radius: 16px; padding: 18px;
+  }
+  .stat .label { font-size: 12px; color: #6B7280; margin-bottom: 8px; }
+  .stat .value { font-size: 26px; font-weight: 800; color: #1F2937; }
+  .stat .value.green { color: #13AB7B; }
+  .stat .value.orange { color: #FE8B4B; }
+  .card {
+    background: #FFFFFF; border: 1px solid #E5E7EB;
+    border-radius: 16px; padding: 20px;
+  }
+  .card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; gap: 10px;
+  }
+  .card-head h3 { font-size: 16px; font-weight: 700; }
+  .card-head .sub { font-size: 12px; color: #9CA3AF; }
+  .filters {
+    display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .filter-chip {
+    padding: 6px 14px; border-radius: 999px;
+    background: #F3F4F6; color: #374151;
+    font-size: 12.5px; font-weight: 600; cursor: pointer;
+    border: 1px solid transparent;
+    text-decoration: none;
+  }
+  .filter-chip:hover { background: #E5E7EB; }
+  .filter-chip.active { background: #E8F5EE; color: #13AB7B; border-color: #13AB7B; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    text-align: left; padding: 12px 14px;
+    color: #6B7280; font-size: 11.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    border-bottom: 1px solid #E5E7EB; white-space: nowrap;
+  }
+  tbody td {
+    padding: 14px;
+    border-bottom: 1px solid #F3F4F6;
+    color: #1F2937;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #FAFBFC; cursor: pointer; }
+  tbody tr:hover td { color: #13AB7B; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 700;
+  }
+  .badge.green { background: #E8F5EE; color: #13AB7B; }
+  .badge.orange { background: #FFF4E6; color: #FE8B4B; }
+  .badge.red { background: #FDECEA; color: #E53935; }
+  .badge.blue { background: #EAF1FE; color: #2563EB; }
+  .badge.gray { background: #F3F4F6; color: #6B7280; }
+  .patient-link {
+    color: #1F2937;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .patient-link:hover { color: #13AB7B; text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">♥</div>
+      <div class="logo-text">
+        <h1>ArtKnit</h1>
+        <p>Кардиоцентр</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title">Рабочее пространство</div>
+      <nav class="nav">
+        <a href="index.html" class="nav-item active"><span class="ico">🏠</span> Главная</a>
+        <a href="#" class="nav-item" data-stub="Пациенты"><span class="ico">👥</span> Пациенты</a>
+        <a href="#" class="nav-item" data-stub="Записи"><span class="ico">📋</span> Записи</a>
+        <a href="manager.html" class="nav-item"><span class="ico">📊</span> Аналитика</a>
+        <a href="#" class="nav-item" data-stub="Календарь"><span class="ico">📅</span> Календарь</a>
+      </nav>
+    </div>
+
+    <div>
+      <div class="section-title">Управление</div>
+      <nav class="nav">
+        <a href="#" class="nav-item" data-stub="Уведомления"><span class="ico">🔔</span> Уведомления</a>
+        <a href="#" class="nav-item" data-stub="Задачи"><span class="ico">✅</span> Задачи</a>
+        <a href="#" class="nav-item" data-stub="Финансы"><span class="ico">💳</span> Финансы</a>
+        <a href="#" class="nav-item" data-stub="Персонал"><span class="ico">👤</span> Персонал</a>
+        <a href="#" class="nav-item" data-stub="Настройки"><span class="ico">⚙️</span> Настройки</a>
+      </nav>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="page-title">
+        <h1>Рабочее пространство врача</h1>
+        <p>Список пациентов с активными маршрутами · обновлено {{ generated_at }}</p>
+      </div>
+      <div class="topbar-right">
+        <div class="user">
+          <div class="avatar">АК</div>
+          <span>Кузнецова А.В. ▾</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI -->
+    <div class="stats">
+      <div class="stat">
+        <div class="label">📊 Всего пациентов</div>
+        <div class="value">{{ kpi.total }}</div>
+      </div>
+      <div class="stat">
+        <div class="label">📋 Активных маршрутов</div>
+        <div class="value green">{{ kpi.assigned }}</div>
+      </div>
+      <div class="stat">
+        <div class="label">🚨 Срочных</div>
+        <div class="value orange">{{ kpi.urgent }}</div>
+      </div>
+      <div class="stat">
+        <div class="label">👥 Мультидисциплинарных</div>
+        <div class="value">{{ kpi.multidisciplinary }}</div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="card-head">
+        <h3>📋 Пациенты с маршрутами</h3>
+        <span class="sub">клик на пациента — открыть карточку</span>
+      </div>
+
+      <div class="filters">
+        <a href="index.html" class="filter-chip active">Все ({{ patients|length }})</a>
+        <a href="#" class="filter-chip" data-stub="Фильтр: Срочные">🚨 Срочные</a>
+        <a href="#" class="filter-chip" data-stub="Фильтр: Плановые">📅 Плановые</a>
+        <a href="#" class="filter-chip" data-stub="Фильтр: Мультидисциплинарные">👥 Мультидисциплинарные</a>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Пациент</th>
+              <th>Находка</th>
+              <th>Специалист</th>
+              <th>Срочность</th>
+              <th>Статус</th>
+              <th>Действие</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in patients %}
+            <tr onclick="window.location.href='doctor_{{ p.patient_id }}.html'">
+              <td>
+                <span class="patient-link">{{ p.patient_name }}</span>
+                <div style="font-size: 11.5px; color: #9CA3AF; margin-top: 2px;">
+                  №{{ p.patient_id }} · {{ p.patient_age }} лет
+                </div>
+              </td>
+              <td>{{ p.finding }}</td>
+              <td>{{ p.specialist }}</td>
+              <td><span class="badge {{ p.badge_class }}">{{ p.badge }}</span></td>
+              <td><span class="badge blue">{{ p.status_label }}</span></td>
+              <td>
+                <a href="doctor_{{ p.patient_id }}.html"
+                   class="filter-chip active"
+                   style="font-size: 11.5px;"
+                   onclick="event.stopPropagation();">
+                  Открыть →
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Заглушки для нереализованных ссылок
+  document.querySelectorAll('[data-stub]').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      e.preventDefault();
+      var name = el.dataset.stub;
+      alert('Функция «' + name + '» доступна в полной версии МИС.');
+    });
+  });
+</script>
+
+</body>
+</html>

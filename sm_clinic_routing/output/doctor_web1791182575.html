@@ -320,8 +320,8 @@
       <div class="topbar-right">
         <div class="icon-btn">🔔<span class="dot"></span></div>
         <div class="user">
-          <div class="avatar">ЕМ</div>
-          <span>Евгения М.В. ▾</span>
+          <div class="avatar">ВР</div>
+          <span>Врач ▾</span>
         </div>
         <button class="btn-primary">+ Новая запись</button>
       </div>
@@ -333,14 +333,12 @@
     <div class="route-banner">
       <div class="route-banner-head">
         ⚠️ Пациент включён в диагностический маршрут
-          · <span style="color: #2563EB;">Мультидисциплинарный</span>
-          · <span style="color: #7A5A00;">Полип ЖП / конкременты</span>
       </div>
       <div class="route-banner-body">
-        <div><b>Основание:</b> УЗИ органов брюшной полости от</div>
-        <div><b>Рекомендация УЗИ:</b> консультация гастроэнтеролог, хирург</div>
-        <div><b>Находка:</b> пристеночное образование</div>
-        <div><b>Статус:</b> 👥 Мультидисциплинарный консилиум</div>
+        <div><b>Основание:</b> УЗИ ОМТ от</div>
+        <div><b>Рекомендация УЗИ:</b> консультация гинеколог</div>
+        <div><b>Находка:</b> диффузные изменения миометрия</div>
+        <div><b>Статус:</b> 📅 Ожидает решения врача</div>
       </div>
       <div class="route-banner-actions">
         <button class="btn-outline">Открыть протокол УЗИ</button>
@@ -358,67 +356,84 @@
         <!-- Карточка пациента -->
         <div class="card">
           <div class="patient-head">
-            <div class="patient-avatar">СП</div>
+            <div class="patient-avatar">ТП</div>
             <div class="patient-info">
-              <h2>Петров Сергей Андреевич</h2>
-              <p>45 лет · мужской · амбулаторная карта № 1026</p>
+              <h2>Тестовая Пациентка П.П.</h2>
+              <p>30 лет · — · амбулаторная карта № web1791182575</p>
             </div>
           </div>
           <div class="patient-meta">
             <div><span>Дата приёма</span>—</div>
             <div><span>Время</span>—</div>
-            <div><span>Врач</span>Евгения М.В.</div>
+            <div><span>Врач</span>Врач</div>
           </div>
         </div>
 
         <!-- ГЛАВНАЯ НАХОДКА -->
         <div class="primary-finding">
           <div class="label">Приоритетная находка</div>
-          <div class="title">✅ пристеночное образование</div>
+          <div class="title">✅ диффузные изменения миометрия</div>
 
           <div class="meta">
-              <span class="badge spec">👨‍⚕️ Гастроэнтеролог</span>
-              <span class="badge spec">👨‍⚕️ Хирург</span>
+              <span class="badge spec">👨‍⚕️ Гинеколог</span>
             <span class="badge urgency-planned">
               📅 Планово
             </span>
           </div>
 
-          <div class="quote">«…гиперэхогенные пристеночные образования размерами 3,3 х 2,8 мм;»</div>
+          <div class="quote">«…ры эндометрия, диффузных изменений миометрия.»</div>
         </div>
 
         <!-- Все находки (collapsible) -->
         <div class="all-findings-toggle" onclick="document.getElementById('allFindings').classList.toggle('open')">
           <span>Все находки по протоколу</span>
-          <span class="count">3</span>
+          <span class="count">5</span>
         </div>
         <div class="all-findings-list" id="allFindings">
             <div class="finding-item">
-              <div class="f-title">пристеночное образование</div>
+              <div class="f-title">диффузные изменения миометрия</div>
               <div class="f-meta">
-                Специалист: Гастроэнтеролог, Хирург
+                Специалист: Гинеколог
                 · urgency: planned
                 · уверенность: 0.95
               </div>
-              <div class="f-quote">«…гиперэхогенные пристеночные образования размерами 3,3 х 2,8 мм;»</div>
+              <div class="f-quote">«…ры эндометрия, диффузных изменений миометрия.»</div>
             </div>
             <div class="finding-item">
-              <div class="f-title">загиб</div>
+              <div class="f-title">несоответствие толщины эндометрия дню цикла</div>
               <div class="f-meta">
-                Специалист: Гастроэнтеролог
+                Специалист: Гинеколог
                 · urgency: planned
-                · уверенность: 0.90
+                · уверенность: 0.95
               </div>
-              <div class="f-quote">«…видной формы с загибом в области шейки.»</div>
+              <div class="f-quote">«…па эндометрия, несоответствия толщины эндометрия дню цикла, неоднородной эхоструктуры эндометрия, диффузных изменений…»</div>
             </div>
             <div class="finding-item">
-              <div class="f-title">холестаз</div>
+              <div class="f-title">неоднородная эхоструктура эндометрия</div>
               <div class="f-meta">
-                Специалист: Гастроэнтеролог
+                Специалист: Гинеколог
                 · urgency: planned
-                · уверенность: 0.90
+                · уверенность: 0.95
               </div>
-              <div class="f-quote">«…НИЕ: Полипоз и холестаз желчного пузыря.»</div>
+              <div class="f-quote">«…рия дню цикла, неоднородной эхоструктуры эндометрия, диффузных изменений миометрия.»</div>
+            </div>
+            <div class="finding-item">
+              <div class="f-title">полип эндометрия</div>
+              <div class="f-meta">
+                Специалист: Гинеколог
+                · urgency: planned
+                · уверенность: 0.95
+              </div>
+              <div class="f-quote">«…ование 12 мм - полип эндометрия.»</div>
+            </div>
+            <div class="finding-item">
+              <div class="f-title">полип эндометрия</div>
+              <div class="f-meta">
+                Специалист: Гинеколог
+                · urgency: planned
+                · уверенность: 0.95
+              </div>
+              <div class="f-quote">«…Е: УЗ признаки полипа эндометрия, несоответствия толщины эндометрия дню цикла, неоднородной…»</div>
             </div>
         </div>
 
@@ -454,11 +469,11 @@
           <div class="explain-list">
             <div class="explain-row">
               <div class="k">Триггер</div>
-              <div class="v">пристеночное образование</div>
+              <div class="v">диффузные изменения миометрия</div>
             </div>
             <div class="explain-row">
               <div class="k">Специалист</div>
-              <div class="v">Гастроэнтеролог, Хирург</div>
+              <div class="v">Гинеколог</div>
             </div>
             <div class="explain-row">
               <div class="k">Срочность</div>
@@ -466,15 +481,11 @@
             </div>
             <div class="explain-row">
               <div class="k">Сценарий</div>
-              <div class="v">мультидисциплинарный</div>
-            </div>
-            <div class="explain-row">
-              <div class="k">Спорная ситуация</div>
-              <div class="v">Полип ЖП / конкременты</div>
+              <div class="v">стандартный</div>
             </div>
             <div class="explain-row">
               <div class="k">Причина</div>
-              <div class="v">пристеночное образование — консультация гастроэнтеролог, хирург | Первично — гастроэнтеролог, при размерах >10 мм или симптомах — хирург</div>
+              <div class="v">диффузные изменения миометрия — консультация гинеколог</div>
             </div>
           </div>
         </div>
@@ -482,7 +493,7 @@
         <div class="stat-card">
           <h4>Цитата из протокола <span>источник триггера</span></h4>
           <div class="explain-row" style="border-left-color: #F5B400; background: #FFF8E6;">
-            <div class="v" style="font-style: italic;">«…гиперэхогенные пристеночные образования размерами 3,3 х 2,8 мм;»</div>
+            <div class="v" style="font-style: italic;">«…ры эндометрия, диффузных изменений миометрия.»</div>
           </div>
         </div>
 
@@ -491,19 +502,19 @@
           <div class="explain-list">
             <div class="explain-row">
               <div class="k">Найдено предложений</div>
-              <div class="v">10</div>
+              <div class="v">8</div>
             </div>
             <div class="explain-row">
               <div class="k">Позитивных находок</div>
-              <div class="v">3</div>
+              <div class="v">5</div>
             </div>
             <div class="explain-row">
               <div class="k">Отрицательных (отсечены)</div>
-              <div class="v">0</div>
+              <div class="v">1</div>
             </div>
             <div class="explain-row">
               <div class="k">Органы в протоколе</div>
-              <div class="v">zhp</div>
+              <div class="v">omt</div>
             </div>
           </div>
         </div>

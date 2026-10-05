@@ -4,8 +4,8 @@
     "total_assigned": 86,
     "total_no_action": 3,
     "total_errors": 0,
-    "avg_duration_ms": 479.53,
-    "total_duration_ms": 42678.4
+    "avg_duration_ms": 565.68,
+    "total_duration_ms": 50345.63
   },
   "by_organ": {
     "протоколы Ж ОМТ": {
@@ -14,7 +14,7 @@
       "no_action": 1,
       "errors": 0,
       "findings_total": 221,
-      "duration_ms": 12973.79
+      "duration_ms": 15157.81
     },
     "протоколы ЖП": {
       "total": 25,
@@ -22,7 +22,7 @@
       "no_action": 1,
       "errors": 0,
       "findings_total": 138,
-      "duration_ms": 7271.86
+      "duration_ms": 8591.9
     },
     "протоколы вены нижних конечностей": {
       "total": 9,
@@ -30,7 +30,7 @@
       "no_action": 0,
       "errors": 0,
       "findings_total": 291,
-      "duration_ms": 10487.9
+      "duration_ms": 12529.7
     },
     "протоколы молочная железа": {
       "total": 10,
@@ -38,7 +38,7 @@
       "no_action": 0,
       "errors": 0,
       "findings_total": 277,
-      "duration_ms": 4783.31
+      "duration_ms": 5591.16
     },
     "протоколы предстательная железа": {
       "total": 10,
@@ -46,7 +46,7 @@
       "no_action": 1,
       "errors": 0,
       "findings_total": 207,
-      "duration_ms": 5173.93
+      "duration_ms": 6092.18
     },
     "протоколы щитовидная железа": {
       "total": 10,
@@ -54,7 +54,7 @@
       "no_action": 0,
       "errors": 0,
       "findings_total": 117,
-      "duration_ms": 1987.61
+      "duration_ms": 2382.88
     }
   },
   "details": [
@@ -74,7 +74,7 @@
       "primary_finding_id": "omt_paraovarialnaya_kista",
       "primary_finding_synonym": "параовариальная киста",
       "primary_organ": "omt",
-      "duration_ms": 720.76,
+      "duration_ms": 809.96,
       "error": ""
     },
     {
@@ -93,7 +93,7 @@
       "primary_finding_id": "omt_drugie_dobrokachestvennye_novoobrazovani",
       "primary_finding_synonym": "другие доброкачественные новообразования тела матки",
       "primary_organ": "omt",
-      "duration_ms": 301.67,
+      "duration_ms": 360.39,
       "error": ""
     },
     {
@@ -112,7 +112,7 @@
       "primary_finding_id": "omt_mioma_matki",
       "primary_finding_synonym": "миома матки",
       "primary_organ": "omt",
-      "duration_ms": 543.52,
+      "duration_ms": 605.12,
       "error": ""
     },
     {
@@ -131,7 +131,7 @@
       "primary_finding_id": "omt_kisty_sheyki_matki",
       "primary_finding_synonym": "кисты шейки матки",
       "primary_organ": "omt",
-      "duration_ms": 411.62,
+      "duration_ms": 499.65,
       "error": ""
     },
     {
@@ -150,7 +150,7 @@
       "primary_finding_id": "omt_intramuralnaya_leyomioma_matki",
       "primary_finding_synonym": "интрамуральная лейомиома матки",
       "primary_organ": "omt",
-      "duration_ms": 554.62,
+      "duration_ms": 662.59,
       "error": ""
     },
     {
@@ -169,7 +169,7 @@
       "primary_finding_id": "omt_mioma_matki",
       "primary_finding_synonym": "миома матки",
       "primary_organ": "omt",
-      "duration_ms": 465.97,
+      "duration_ms": 539.2,
       "error": ""
     },
     {
@@ -188,7 +188,7 @@
       "primary_finding_id": "omt_endometrioz_matki",
       "primary_finding_synonym": "эндометриоз тела матки",
       "primary_organ": "omt",
-      "duration_ms": 740.18,
+      "duration_ms": 858.89,
       "error": ""
     },
     {
@@ -209,7 +209,7 @@
       "primary_finding_id": "omt_varikoznoe_rasshirenie_ven_malogo_taza",
       "primary_finding_synonym": "варикозное расширение вен малого таза",
       "primary_organ": "omt",
-      "duration_ms": 471.79,
+      "duration_ms": 542.84,
       "error": ""
     },
     {
@@ -229,7 +229,7 @@
       "primary_finding_id": "omt_giperplaziya_endometriya",
       "primary_finding_synonym": "гиперплазия эндометрия",
       "primary_organ": "omt",
-      "duration_ms": 499.84,
+      "duration_ms": 576.81,
       "error": ""
     },
     {
@@ -248,7 +248,7 @@
       "primary_finding_id": "omt_svobodnaya_zhidkost_v_malom_tazu",
       "primary_finding_synonym": "свободная жидкость в малом тазу",
       "primary_organ": "omt",
-      "duration_ms": 536.18,
+      "duration_ms": 628.83,
       "error": ""
     },
     {
@@ -267,7 +267,7 @@
       "primary_finding_id": "omt_mioma_matki",
       "primary_finding_synonym": "миома матки",
       "primary_organ": "omt",
-      "duration_ms": 348.52,
+      "duration_ms": 412.73,
       "error": ""
     },
     {
@@ -286,7 +286,7 @@
       "primary_finding_id": "omt_diffuznye_izmeneniya_miometriya",
       "primary_finding_synonym": "диффузные изменения миометрия",
       "primary_organ": "omt",
-      "duration_ms": 651.07,
+      "duration_ms": 770.63,
       "error": ""
     },
     {
@@ -305,7 +305,7 @@
       "primary_finding_id": "omt_mioma_matki",
       "primary_finding_synonym": "миома матки",
       "primary_organ": "omt",
-      "duration_ms": 334.4,
+      "duration_ms": 400.8,
       "error": ""
     },
     {
@@ -324,7 +324,7 @@
       "primary_finding_id": "omt_gidrosalpings",
       "primary_finding_synonym": "гидросальпингс справа",
       "primary_organ": "omt",
-      "duration_ms": 664.97,
+      "duration_ms": 794.11,
       "error": ""
     },
     {
@@ -343,7 +343,7 @@
       "primary_finding_id": "omt_mioma_matki",
       "primary_finding_synonym": "миома матки",
       "primary_organ": "omt",
-      "duration_ms": 546.49,
+      "duration_ms": 654.92,
       "error": ""
     },
     {
@@ -362,7 +362,7 @@
       "primary_finding_id": "omt_dominantnyy_follikul",
       "primary_finding_synonym": "доминантный фолликул",
       "primary_organ": "omt",
-      "duration_ms": 478.48,
+      "duration_ms": 557.25,
       "error": ""
     },
     {
@@ -381,7 +381,7 @@
       "primary_finding_id": "omt_kisty_sheyki_matki",
       "primary_finding_synonym": "кисты шейки матки",
       "primary_organ": "omt",
-      "duration_ms": 361.48,
+      "duration_ms": 440.22,
       "error": ""
     },
     {
@@ -400,7 +400,7 @@
       "primary_finding_id": "omt_diffuznye_izmeneniya_miometriya",
       "primary_finding_synonym": "диффузные изменения миометрия",
       "primary_organ": "omt",
-      "duration_ms": 700.92,
+      "duration_ms": 824.0,
       "error": ""
     },
     {
@@ -420,7 +420,7 @@
       "primary_finding_id": "omt_rasshirenie_ven_parametralnogo_spleteniy",
       "primary_finding_synonym": "параметральные вены расширены до 7 мм",
       "primary_organ": "omt",
-      "duration_ms": 290.39,
+      "duration_ms": 339.82,
       "error": ""
     },
     {
@@ -437,7 +437,7 @@
       "primary_finding_id": "",
       "primary_finding_synonym": "",
       "primary_organ": "",
-      "duration_ms": 447.57,
+      "duration_ms": 517.69,
       "error": ""
     },
     {
@@ -456,7 +456,7 @@
       "primary_finding_id": "omt_diffuznye_izmeneniya_miometriya",
       "primary_finding_synonym": "диффузные изменения миометрия",
       "primary_organ": "omt",
-      "duration_ms": 589.81,
+      "duration_ms": 696.13,
       "error": ""
     },
     {
@@ -477,7 +477,7 @@
       "primary_finding_id": "omt_varikoznoe_rasshirenie_ven_malogo_taza",
       "primary_finding_synonym": "варикозное расширение вен малого таза",
       "primary_organ": "omt",
-      "duration_ms": 903.79,
+      "duration_ms": 1050.49,
       "error": ""
     },
     {
@@ -498,7 +498,7 @@
       "primary_finding_id": "omt_varikoznoe_rasshirenie_ven_malogo_taza",
       "primary_finding_synonym": "варикозное расширение вен малого таза",
       "primary_organ": "omt",
-      "duration_ms": 619.08,
+      "duration_ms": 708.45,
       "error": ""
     },
     {
@@ -517,7 +517,7 @@
       "primary_finding_id": "omt_zhidkostnoe_obrazovanie_yaichnika",
       "primary_finding_synonym": "аваскулярное образование",
       "primary_organ": "omt",
-      "duration_ms": 460.6,
+      "duration_ms": 533.38,
       "error": ""
     },
     {
@@ -536,7 +536,7 @@
       "primary_finding_id": "omt_endometrioidnaya_kista_yaichnika",
       "primary_finding_synonym": "киста правого яичника",
       "primary_organ": "omt",
-      "duration_ms": 330.07,
+      "duration_ms": 372.91,
       "error": ""
     },
     {
@@ -555,7 +555,7 @@
       "primary_finding_id": "zhp_diskineziya_zhelchnogo_puzyrya_po_gipomo",
       "primary_finding_synonym": "дискинезия желчного пузыря по гипомоторному типу",
       "primary_organ": "zhp",
-      "duration_ms": 329.15,
+      "duration_ms": 387.43,
       "error": ""
     },
     {
@@ -574,7 +574,7 @@
       "primary_finding_id": "zhp_diffuznye_izmeneniya_pecheni",
       "primary_finding_synonym": "диффузные изменения паренхимы",
       "primary_organ": "zhp",
-      "duration_ms": 243.6,
+      "duration_ms": 337.54,
       "error": ""
     },
     {
@@ -595,7 +595,7 @@
       "primary_finding_id": "zhp_polip_zhelchnogo_puzyrya",
       "primary_finding_synonym": "гиперэхогенное несмещаемое образование",
       "primary_organ": "zhp",
-      "duration_ms": 302.9,
+      "duration_ms": 357.09,
       "error": ""
     },
     {
@@ -614,7 +614,7 @@
       "primary_finding_id": "zhp_deformatsiya_zhelchnogo_puzyrya",
       "primary_finding_synonym": "деформация желчного пузыря",
       "primary_organ": "zhp",
-      "duration_ms": 292.29,
+      "duration_ms": 336.29,
       "error": ""
     },
     {
@@ -634,7 +634,7 @@
       "primary_finding_id": "zhp_konkrementy_zhelchnogo_puzyrya",
       "primary_finding_synonym": "конкременты желчного пузыря",
       "primary_organ": "zhp",
-      "duration_ms": 144.71,
+      "duration_ms": 166.91,
       "error": ""
     },
     {
@@ -654,7 +654,7 @@
       "primary_finding_id": "zhp_sladzh",
       "primary_finding_synonym": "билиарный сладж",
       "primary_organ": "zhp",
-      "duration_ms": 168.35,
+      "duration_ms": 195.97,
       "error": ""
     },
     {
@@ -673,7 +673,7 @@
       "primary_finding_id": "zhp_deformatsiya_zhelchnogo_puzyrya",
       "primary_finding_synonym": "загиб",
       "primary_organ": "zhp",
-      "duration_ms": 92.92,
+      "duration_ms": 107.98,
       "error": ""
     },
     {
@@ -690,7 +690,7 @@
       "primary_finding_id": "",
       "primary_finding_synonym": "",
       "primary_organ": "",
-      "duration_ms": 114.37,
+      "duration_ms": 139.41,
       "error": ""
     },
     {
@@ -709,7 +709,7 @@
       "primary_finding_id": "zhp_deformatsiya_zhelchnogo_puzyrya",
       "primary_finding_synonym": "перегиб",
       "primary_organ": "zhp",
-      "duration_ms": 305.16,
+      "duration_ms": 400.77,
       "error": ""
     },
     {
@@ -729,7 +729,7 @@
       "primary_finding_id": "zhp_polip_zhelchnogo_puzyrya",
       "primary_finding_synonym": "полип желчного пузыря",
       "primary_organ": "zhp",
-      "duration_ms": 402.77,
+      "duration_ms": 470.56,
       "error": ""
     },
     {
@@ -748,7 +748,7 @@
       "primary_finding_id": "zhp_deformatsiya_zhelchnogo_puzyrya",
       "primary_finding_synonym": "перегиб",
       "primary_organ": "zhp",
-      "duration_ms": 429.3,
+      "duration_ms": 505.69,
       "error": ""
     },
     {
@@ -768,7 +768,7 @@
       "primary_finding_id": "zhp_steatoz_podzheludochnoy_zhelezy",
       "primary_finding_synonym": "жировая инфильтрация",
       "primary_organ": "zhp",
-      "duration_ms": 345.97,
+      "duration_ms": 423.24,
       "error": ""
     },
     {
@@ -788,7 +788,7 @@
       "primary_finding_id": "zhp_polip_zhelchnogo_puzyrya",
       "primary_finding_synonym": "полип желчного пузыря",
       "primary_organ": "zhp",
-      "duration_ms": 412.06,
+      "duration_ms": 480.17,
       "error": ""
     },
     {
@@ -808,7 +808,7 @@
       "primary_finding_id": "zhp_gemangioma_pecheni",
       "primary_finding_synonym": "гемангиома печени",
       "primary_organ": "zhp",
-      "duration_ms": 410.5,
+      "duration_ms": 479.54,
       "error": ""
     },
     {
@@ -828,7 +828,7 @@
       "primary_finding_id": "zhp_polip_zhelchnogo_puzyrya",
       "primary_finding_synonym": "полип желчного пузыря",
       "primary_organ": "zhp",
-      "duration_ms": 275.94,
+      "duration_ms": 321.14,
       "error": ""
     },
     {
@@ -848,7 +848,7 @@
       "primary_finding_id": "zhp_diffuznye_izmeneniya_pecheni",
       "primary_finding_synonym": "диффузные изменения печени",
       "primary_organ": "zhp",
-      "duration_ms": 227.58,
+      "duration_ms": 263.99,
       "error": ""
     },
     {
@@ -868,7 +868,7 @@
       "primary_finding_id": "zhp_divertikuly_sigmovidnoy_kishki",
       "primary_finding_synonym": "дивертикулы сигмовидной кишки",
       "primary_organ": "zhp",
-      "duration_ms": 460.35,
+      "duration_ms": 536.94,
       "error": ""
     },
     {
@@ -888,7 +888,7 @@
       "primary_finding_id": "zhp_polip_zhelchnogo_puzyrya",
       "primary_finding_synonym": "пристеночное образование",
       "primary_organ": "zhp",
-      "duration_ms": 332.49,
+      "duration_ms": 383.8,
       "error": ""
     },
     {
@@ -909,7 +909,7 @@
       "primary_finding_id": "zhp_hronicheskiy_holetsistit",
       "primary_finding_synonym": "хронический холецистит",
       "primary_organ": "zhp",
-      "duration_ms": 362.07,
+      "duration_ms": 425.84,
       "error": ""
     },
     {
@@ -929,7 +929,7 @@
       "primary_finding_id": "zhp_zhirovoy_gepatoz",
       "primary_finding_synonym": "жировой гепатоз",
       "primary_organ": "zhp",
-      "duration_ms": 276.33,
+      "duration_ms": 319.8,
       "error": ""
     },
     {
@@ -949,7 +949,7 @@
       "primary_finding_id": "zhp_zhirovoy_gepatoz",
       "primary_finding_synonym": "жировой гепатоз",
       "primary_organ": "zhp",
-      "duration_ms": 279.01,
+      "duration_ms": 312.78,
       "error": ""
     },
     {
@@ -968,7 +968,7 @@
       "primary_finding_id": "zhp_diffuznye_izmeneniya_pecheni",
       "primary_finding_synonym": "диффузные изменения паренхимы",
       "primary_organ": "zhp",
-      "duration_ms": 351.71,
+      "duration_ms": 409.23,
       "error": ""
     },
     {
@@ -987,7 +987,7 @@
       "primary_finding_id": "zhp_deformatsiya_zhelchnogo_puzyrya",
       "primary_finding_synonym": "загиб",
       "primary_organ": "zhp",
-      "duration_ms": 241.21,
+      "duration_ms": 280.71,
       "error": ""
     },
     {
@@ -1006,7 +1006,7 @@
       "primary_finding_id": "zhp_sladzh",
       "primary_finding_synonym": "взвесь",
       "primary_organ": "zhp",
-      "duration_ms": 230.25,
+      "duration_ms": 269.22,
       "error": ""
     },
     {
@@ -1025,7 +1025,7 @@
       "primary_finding_id": "zhp_diffuznye_izmeneniya_pecheni",
       "primary_finding_synonym": "диффузные изменения паренхимы",
       "primary_organ": "zhp",
-      "duration_ms": 240.87,
+      "duration_ms": 279.86,
       "error": ""
     },
     {
@@ -1044,7 +1044,7 @@
       "primary_finding_id": "nk_ateroskleroz",
       "primary_finding_synonym": "атеросклероз артерий",
       "primary_organ": "nk",
-      "duration_ms": 499.75,
+      "duration_ms": 589.1,
       "error": ""
     },
     {
@@ -1063,7 +1063,7 @@
       "primary_finding_id": "nk_edinichnye_pristenochnye_kaltsinirovanny",
       "primary_finding_synonym": "единичные пристеночные кальцинированные асб",
       "primary_organ": "nk",
-      "duration_ms": 938.43,
+      "duration_ms": 1128.72,
       "error": ""
     },
     {
@@ -1082,7 +1082,7 @@
       "primary_finding_id": "nk_asb",
       "primary_finding_synonym": "атеросклеротическая бляшка",
       "primary_organ": "nk",
-      "duration_ms": 1874.23,
+      "duration_ms": 2198.65,
       "error": ""
     },
     {
@@ -1102,7 +1102,7 @@
       "primary_finding_id": "nk_kim_=_1",
       "primary_finding_synonym": "2 мм",
       "primary_organ": "nk",
-      "duration_ms": 982.29,
+      "duration_ms": 1200.52,
       "error": ""
     },
     {
@@ -1122,7 +1122,7 @@
       "primary_finding_id": "nk_i839",
       "primary_finding_synonym": "варикозное расширение вен",
       "primary_organ": "nk",
-      "duration_ms": 1420.36,
+      "duration_ms": 1664.39,
       "error": ""
     },
     {
@@ -1141,7 +1141,7 @@
       "primary_finding_id": "nk_okklyuziya_levoy_zbba",
       "primary_finding_synonym": "окклюзия левой збба",
       "primary_organ": "nk",
-      "duration_ms": 932.42,
+      "duration_ms": 1102.69,
       "error": ""
     },
     {
@@ -1162,7 +1162,7 @@
       "primary_finding_id": "nk_nesostoyatelnost_stvola_bpv_sleva",
       "primary_finding_synonym": "несостоятельность ствола бпв слева",
       "primary_organ": "nk",
-      "duration_ms": 725.69,
+      "duration_ms": 860.94,
       "error": ""
     },
     {
@@ -1183,7 +1183,7 @@
       "primary_finding_id": "nk_hronicheskoe_zabolevanie_ven_nog_c1s_ep_",
       "primary_finding_synonym": "хроническое заболевание вен ног c1s ep as pr1 lii",
       "primary_organ": "nk",
-      "duration_ms": 1395.24,
+      "duration_ms": 1755.2,
       "error": ""
     },
     {
@@ -1203,7 +1203,7 @@
       "primary_finding_id": "nk_vospalitelnye_izmeneniya_pzhk",
       "primary_finding_synonym": "воспалительные изменения пжк",
       "primary_organ": "nk",
-      "duration_ms": 1719.49,
+      "duration_ms": 2029.49,
       "error": ""
     },
     {
@@ -1222,7 +1222,7 @@
       "primary_finding_id": "mzh_mastopatiya",
       "primary_finding_synonym": "уз-признаки мастопатии",
       "primary_organ": "mzh",
-      "duration_ms": 583.64,
+      "duration_ms": 680.43,
       "error": ""
     },
     {
@@ -1244,7 +1244,7 @@
       "primary_finding_id": "mzh_implanty_molochnyh_zhelez",
       "primary_finding_synonym": "состояние после маммопластики",
       "primary_organ": "mzh",
-      "duration_ms": 357.55,
+      "duration_ms": 420.8,
       "error": ""
     },
     {
@@ -1264,7 +1264,7 @@
       "primary_finding_id": "mzh_avaskulyarnoe_obrazovanie",
       "primary_finding_synonym": "при цдк аваскулярное",
       "primary_organ": "mzh",
-      "duration_ms": 879.52,
+      "duration_ms": 1023.06,
       "error": ""
     },
     {
@@ -1284,7 +1284,7 @@
       "primary_finding_id": "mzh_bi_rads_4",
       "primary_finding_synonym": "bi-rads 4",
       "primary_organ": "mzh",
-      "duration_ms": 598.86,
+      "duration_ms": 696.25,
       "error": ""
     },
     {
@@ -1304,7 +1304,7 @@
       "primary_finding_id": "mzh_ochagovoe_obrazovanie_molochnoy_zhelezy",
       "primary_finding_synonym": "объемное образование",
       "primary_organ": "mzh",
-      "duration_ms": 515.61,
+      "duration_ms": 599.91,
       "error": ""
     },
     {
@@ -1323,7 +1323,7 @@
       "primary_finding_id": "mzh_diffuznye_izmeneniya_molochnyh_zhelez",
       "primary_finding_synonym": "диффузные изменения",
       "primary_organ": "mzh",
-      "duration_ms": 211.97,
+      "duration_ms": 246.59,
       "error": ""
     },
     {
@@ -1345,7 +1345,7 @@
       "primary_finding_id": "mzh_sostoyanie_posle_mastopeksii",
       "primary_finding_synonym": "состояние после мастопексии",
       "primary_organ": "mzh",
-      "duration_ms": 451.85,
+      "duration_ms": 533.69,
       "error": ""
     },
     {
@@ -1364,7 +1364,7 @@
       "primary_finding_id": "mzh_diffuznye_izmeneniya_molochnyh_zhelez",
       "primary_finding_synonym": "диффузные изменения",
       "primary_organ": "mzh",
-      "duration_ms": 346.24,
+      "duration_ms": 410.69,
       "error": ""
     },
     {
@@ -1383,7 +1383,7 @@
       "primary_finding_id": "mzh_kistoznaya_mastopatiya",
       "primary_finding_synonym": "мелкокистозный компонент",
       "primary_organ": "mzh",
-      "duration_ms": 291.87,
+      "duration_ms": 341.82,
       "error": ""
     },
     {
@@ -1402,7 +1402,7 @@
       "primary_finding_id": "mzh_avaskulyarnoe_obrazovanie",
       "primary_finding_synonym": "при цдк аваскулярное",
       "primary_organ": "mzh",
-      "duration_ms": 546.2,
+      "duration_ms": 637.92,
       "error": ""
     },
     {
@@ -1421,7 +1421,7 @@
       "primary_finding_id": "pzh_diffuznye_izmeneniya_parenhimy_predstate",
       "primary_finding_synonym": "диффузные изменения паренхимы предстательной железы",
       "primary_organ": "pzh",
-      "duration_ms": 355.59,
+      "duration_ms": 420.45,
       "error": ""
     },
     {
@@ -1440,7 +1440,7 @@
       "primary_finding_id": "pzh_adenomatoznye_uzly",
       "primary_finding_synonym": "аденоматозный узел",
       "primary_organ": "pzh",
-      "duration_ms": 482.99,
+      "duration_ms": 558.09,
       "error": ""
     },
     {
@@ -1459,7 +1459,7 @@
       "primary_finding_id": "pzh_adenomatoznye_uzly",
       "primary_finding_synonym": "аденоматозные узлы",
       "primary_organ": "pzh",
-      "duration_ms": 591.14,
+      "duration_ms": 696.22,
       "error": ""
     },
     {
@@ -1478,7 +1478,7 @@
       "primary_finding_id": "pzh_diffuznye_izmeneniya_parenhimy_predstate",
       "primary_finding_synonym": "диффузные изменения паренхимы предстательной железы",
       "primary_organ": "pzh",
-      "duration_ms": 462.39,
+      "duration_ms": 539.49,
       "error": ""
     },
     {
@@ -1498,7 +1498,7 @@
       "primary_finding_id": "pzh_ochagovye_obrazovaniya_v_perifericheskoy",
       "primary_finding_synonym": "образование в периферической зоне",
       "primary_organ": "pzh",
-      "duration_ms": 483.76,
+      "duration_ms": 560.55,
       "error": ""
     },
     {
@@ -1517,7 +1517,7 @@
       "primary_finding_id": "pzh_adenomatoznye_uzly",
       "primary_finding_synonym": "узлы дгпж",
       "primary_organ": "pzh",
-      "duration_ms": 956.58,
+      "duration_ms": 1118.56,
       "error": ""
     },
     {
@@ -1536,7 +1536,7 @@
       "primary_finding_id": "pzh_dgpzh",
       "primary_finding_synonym": "гиперплазия предстательной железы",
       "primary_organ": "pzh",
-      "duration_ms": 416.01,
+      "duration_ms": 502.7,
       "error": ""
     },
     {
@@ -1553,7 +1553,7 @@
       "primary_finding_id": "",
       "primary_finding_synonym": "",
       "primary_organ": "",
-      "duration_ms": 302.61,
+      "duration_ms": 378.26,
       "error": ""
     },
     {
@@ -1572,7 +1572,7 @@
       "primary_finding_id": "pzh_diffuzno_neodnorodnaya_ehostruktura",
       "primary_finding_synonym": "неоднородная структура",
       "primary_organ": "pzh",
-      "duration_ms": 677.41,
+      "duration_ms": 785.38,
       "error": ""
     },
     {
@@ -1591,7 +1591,7 @@
       "primary_finding_id": "pzh_adenomatoznye_uzly",
       "primary_finding_synonym": "аденоматозные узлы",
       "primary_organ": "pzh",
-      "duration_ms": 445.45,
+      "duration_ms": 532.48,
       "error": ""
     },
     {
@@ -1610,7 +1610,7 @@
       "primary_finding_id": "thyroid_ait",
       "primary_finding_synonym": "диффузные изменения щитовидной железы",
       "primary_organ": "thyroid",
-      "duration_ms": 220.89,
+      "duration_ms": 259.19,
       "error": ""
     },
     {
@@ -1629,7 +1629,7 @@
       "primary_finding_id": "thyroid_uzel",
       "primary_finding_synonym": "Узел щитовидной железы",
       "primary_organ": "thyroid",
-      "duration_ms": 102.86,
+      "duration_ms": 119.06,
       "error": ""
     },
     {
@@ -1648,7 +1648,7 @@
       "primary_finding_id": "thyroid_uzel",
       "primary_finding_synonym": "изоэхогенное образование",
       "primary_organ": "thyroid",
-      "duration_ms": 243.14,
+      "duration_ms": 292.52,
       "error": ""
     },
     {
@@ -1667,7 +1667,7 @@
       "primary_finding_id": "thyroid_kista",
       "primary_finding_synonym": "киста",
       "primary_organ": "thyroid",
-      "duration_ms": 160.67,
+      "duration_ms": 189.33,
       "error": ""
     },
     {
@@ -1687,7 +1687,7 @@
       "primary_finding_id": "thyroid_uzel",
       "primary_finding_synonym": "узловое образование",
       "primary_organ": "thyroid",
-      "duration_ms": 187.74,
+      "duration_ms": 232.93,
       "error": ""
     },
     {
@@ -1707,7 +1707,7 @@
       "primary_finding_id": "thyroid_uzel",
       "primary_finding_synonym": "узловое образование",
       "primary_organ": "thyroid",
-      "duration_ms": 242.45,
+      "duration_ms": 284.81,
       "error": ""
     },
     {
@@ -1727,7 +1727,7 @@
       "primary_finding_id": "thyroid_uzel",
       "primary_finding_synonym": "узловое образование",
       "primary_organ": "thyroid",
-      "duration_ms": 178.06,
+      "duration_ms": 209.53,
       "error": ""
     },
     {
@@ -1746,7 +1746,7 @@
       "primary_finding_id": "thyroid_ait",
       "primary_finding_synonym": "диффузные изменения щитовидной железы",
       "primary_organ": "thyroid",
-      "duration_ms": 235.71,
+      "duration_ms": 280.13,
       "error": ""
     },
     {
@@ -1765,7 +1765,7 @@
       "primary_finding_id": "thyroid_uzel",
       "primary_finding_synonym": "узел",
       "primary_organ": "thyroid",
-      "duration_ms": 175.08,
+      "duration_ms": 218.7,
       "error": ""
     },
     {
@@ -1784,7 +1784,7 @@
       "primary_finding_id": "thyroid_ait",
       "primary_finding_synonym": "аит",
       "primary_organ": "thyroid",
-      "duration_ms": 241.01,
+      "duration_ms": 296.68,
       "error": ""
     }
   ]

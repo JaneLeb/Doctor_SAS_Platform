@@ -1,0 +1,60 @@
+# ============================================================
+# Makefile.docker — запуск make-целей проекта через Docker
+#
+# Требуется: Docker + Docker Compose v2
+#   • Linux:  docker compose (или docker-compose v2)
+#   • Windows: Docker Desktop (WSL2 backend) — ничего дополнительно
+#
+# Примеры:
+#   make -f Makefile.docker up        # собрать образ и поднять веб-сервер (:8000)
+#   make -f Makefile.docker all       # полный цикл: setup + parse + test-real + demo + manager
+#   make -f Makefile.docker demo      # демо-генерация HTML
+#   make -f Makefile.docker test      # unit-тесты
+#   make -f Makefile.docker audit     # журнал аудита
+#   make -f Makefile.docker down      # остановить контейнер
+#   make -f Makefile.docker shell     # интерактивная оболочка в контейнере
+#
+# Любая другая цель оригинального Makefile автоматически пробрасывается
+# в контейнер:  make -f Makefile.docker <target>
+# ============================================================
+
+COMPOSE := docker compose
+SERVICE := artknit
+
+.PHONY: help up down build shell
+
+help:
+	@echo "ArtKnit через Docker:"
+	@echo ""
+	@echo "  make -f Makefile.docker up          — собрать образ и запустить веб-сервер"
+	@echo "  make -f Makefile.docker build       — пересобрать образ"
+	@echo "  make -f Makefile.docker all         — полный цикл (make all)"
+	@echo "  make -f Makefile.docker demo        — демо-генерация HTML"
+	@echo "  make -f Makefile.docker parse       — пересобрать YAML из таблиц"
+	@echo "  make -f Makefile.docker test        — unit-тесты"
+	@echo "  make -f Makefile.docker test-real   — 89 реальных протоколов"
+	@echo "  make -f Makefile.docker manager     — дашборд руководителя"
+	@echo "  make -f Makefile.docker audit       — журнал аудита"
+	@echo "  make -f Makefile.docker metrics     — метрики"
+	@echo "  make -f Makefile.docker shell       — оболочка в контейнере"
+	@echo "  make -f Makefile.docker down        — остановить контейнер"
+	@echo ""
+	@echo "Любая другая цель выполняется внутри контейнера:"
+	@echo "  make -f Makefile.docker <target>"
+
+up:
+	$(COMPOSE) up -d --build
+
+down:
+	$(COMPOSE) down
+
+build:
+	$(COMPOSE) build
+
+shell:
+	$(COMPOSE) run --rm $(SERVICE) bash
+
+# Проброс ЛЮБОЙ цели оригинального Makefile в контейнер:
+#   make -f Makefile.docker demo  →  docker compose run --rm artknit make demo
+%:
+	$(COMPOSE) run --rm $(SERVICE) make $@
